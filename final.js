@@ -38,11 +38,23 @@ var build_airlines_interface = function() {
     let homebody=$('<div class="homebody"></div>');
     body.append(homebody);
     let header=$('<h1> Welcome to Air-KAB<h1>');
+    let header2=$('<h2>The Single Best Place for Airline Travel</h2>');
     homebody.append(header);
-    let text=$('<p class="text">type stuff here</p>');
-    homebody.append(text);
+    homebody.append(header2);
+    let welcome=$('<div class="welcome"</div>');
+    homebody.append(welcome);
+    let p1=$('<p class="text">Are you tired of crying babies and annoying kids? Are you tired of always getting stuck in the middle seat with no leg room? Are you tired of having to look past people in order to get a glimpse of those beautiful clouds? Are you tired of getting condescending looks for traveling alone? </p>'); 
+    let p2= $('<p class="text">If you answered yes to any or all of these quetions, then Air-KAB is the place for you! <br> We are the taxis of the air for all you singles out there. We at Air-KAB go above and beyond to bring you confort. That is why every seat is a window seat. Yes, EVERY seat, so say goodbye to staring past peoples heads and hello clouds and tiny landscapes. Our single seat rows are practical and made for comfort. No more cramped leg space or forced small talk. However, the aisle is small enough to talk to the person on the other side without yelling if you are looking to make connections.</p>');
+    let p3=$('<p class="text">Our website is super easy to use! If you have a destination in mind, click Book a Flight and get yourself a ticket on the single most best airline. </p>');
+    let p4=$('<p class="text">Still deciding on a place to go? Have you recently had a breakup and just need to get away? Still deciding on west or east coast? No worries--we got you! Click on Browse Destination to search cities and peruse all the wondering things they have to offer. </p>');      
+    let p5=$('<p class="text">Thank you for choosing Air-KAB, the single best place for airline travel!</p>');
+    welcome.append(p1);
+    welcome.append(p2);
+    welcome.append(p3);
+    welcome.append(p4);
+    welcome.append(p5);
     let book_btn=$('<button id="book_btn">Book a Flight</button>');
-    let search_btn=$('<button id="search_btn">Search</button>');
+    let search_btn=$('<button id="search_btn">Browse Destination</button>');
 
     homebody.append(book_btn);
     homebody.append(search_btn);
@@ -52,6 +64,8 @@ var build_airlines_interface = function() {
         console.log("book");
         let body=$('body');
         body.empty();
+        let home_btn=$('<button id="home_btn">Home Page</button>');
+        body.append(home_btn);
         let btitle=$('<h1 class="btitle">Book a Flight!</h1>');
         body.append(btitle);
         let btext=$('<p class="btext">placeholder<p>');
@@ -76,6 +90,16 @@ var build_airlines_interface = function() {
         body.append(submit_btn);
 
     });
+
+
+    $('body').on('click', '#home_btn', function () {   //do I put this here?? 
+        console.log("I'm home");
+        build_airlines_interface();
+
+    });
+
+
+
 
     $('body').on('click', '#submit_btn', function () {
         console.log("submit");
@@ -125,10 +149,10 @@ var build_airlines_interface = function() {
                                                     data:{
                                                      seat:{
                                                             plane_id: pid,
-                                                            row: 1,
-                                                        number: "A",
+                                                            row: 1,        //CHANGE THIS EVENTUALLY!!!!
+                                                        number: "A",       //either a or b 
                                                         cabin: "economy",
-                                                        is_window:true
+                                                        is_window:true     
                                                     }
                                                 }
                                             });
@@ -215,6 +239,8 @@ var build_airlines_interface = function() {
     */ 
 
     /* on HOME PAGE ask for where you're leaving from and save that so never ask again 8*/ 
+
+
 
 
            
