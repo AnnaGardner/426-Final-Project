@@ -3,11 +3,11 @@ var root_url = "http://comp426.cs.unc.edu:3001/";
 $(document).ready(() => {
     $('#login_btn').on('click', () => {
 	
-	let user = $('#user').val();
-	let pass = $('#pass').val();
+	//let user = $('#user').val();
+	//let pass = $('#pass').val();
 
-	console.log(user);
-	console.log(pass);
+	//console.log(user);
+	//console.log(pass);
 
 	$.ajax(root_url + "sessions",
 	       {
@@ -15,8 +15,8 @@ $(document).ready(() => {
 		   xhrFields: {withCredentials: true},
 		   data: {
 		       user: {
-			   username: user,
-			   password: pass
+			   username: 'bebbitt',
+			   password: 'thepassword'
 		       }
 		   },
 		   success: () => {
@@ -35,6 +35,24 @@ var build_airlines_interface = function() {
     body.empty();
 
    
+
+    let header=$('<h1> Welcome to Air-KAB<h1>');
+    body.append(header);
+    let text=$('<p class="text">type stuff here</p>');
+    body.append(text);
+    let book_btn=$('<button id="book_btn">Book a Flight</button>');
+    let search_btn=$('<button id="search_btn">Search</button>');
+
+    body.append(book_btn);
+    body.append(search_btn);
+
+
+
+
+
+
+
+
 
    /* for(var i=0; i<3; i++){
     	$.ajax(root_url + "flights",
