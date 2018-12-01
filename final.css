@@ -1,17 +1,32 @@
-h1{
-    color: darkslateblue;
-    font-style: italic;
+body{
+    background-image: url(loginpagepicture.jpg);
 }
-
+h1{
+    color: darkgrey;
+    
+}
+#pass{
+    background-color: #b3e6ff;
+    border-radius: 10px;
+    
+}
+#user{
+    background-color:#b3e6ff;
+    border-radius: 10px;
+}
 .login{
-    color: darkslateblue;
-    font-style: italic;
+    color: #b3e6ff;
+    
+    
 }
 #login_btn{
-    background-color: darkslateblue;
+    background-color: #b3e6ff;
     border:darkgrey;
-    color: whitesmoke;
+    color: black;
     padding: 5px;
     display: inline-block;
     font-size: 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    margin-top: 8px;
 }
