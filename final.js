@@ -35,16 +35,17 @@ var build_airlines_interface = function() {
     body.empty();
 
    
-
+    let homebody = $('<div class="homebody"></div>');
+    body.append(homebody);
     let header=$('<h1> Welcome to Air-KAB<h1>');
-    body.append(header);
+    homebody.append(header);
     let text=$('<p class="text">type stuff here</p>');
-    body.append(text);
+    homebody.append(text);
     let book_btn=$('<button id="book_btn">Book a Flight</button>');
     let search_btn=$('<button id="search_btn">Search</button>');
 
-    body.append(book_btn);
-    body.append(search_btn);
+    homebody.append(book_btn);
+    homebody.append(search_btn);
 
 
 

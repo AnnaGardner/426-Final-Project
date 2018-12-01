@@ -1,8 +1,12 @@
 body{
-    background-image: url(loginpagepicture.jpg);
+    background-image: url(sky-background-3890.jpeg);
 }
 h1{
-    color: darkgrey;
+    color: black;   
+}
+.homebody{
+    background-color:rgb(84, 153, 196, .6);
+}
     
 }
 #pass{
@@ -29,4 +33,7 @@ h1{
     border-radius: 10px;
     text-decoration: none;
     margin-top: 8px;
+}
+.text{
+    color: black;
 }
