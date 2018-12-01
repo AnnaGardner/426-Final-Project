@@ -34,7 +34,7 @@ var build_airlines_interface = function() {
 
     body.empty();
 
-    body.append("<h2>Airlines</h2>");
+   /* body.append("<h2>Airlines</h2>");
 
     let airline_list = $("<ul id='airlines_list'></ul>");
     body.append(airline_list);
@@ -72,7 +72,29 @@ var build_airlines_interface = function() {
 		       airline_list.append("<li>" + airline.name + "</li>");
 		   }
 	       });
-    });
+    });*/
+
+    for(var i=0; i<3; i++){
+    	$.ajax(root_url + "flights",
+	       {
+		   type: 'POST',
+		   data: {
+		       "flight": {
+    			"departs_at":   "14:30",
+    			"arrives_at":   "17:10",
+   				"number":       "AA 2667",
+    			"departure_id": 8,
+    			"arrival_id":   9
+  				}
+		   },
+		   xhrFields: {withCredentials: true},
+		   success: (response) => {
+		   	//console.log(airline);
+		   }
+    	});
+    };
+
+
 
 };
 
