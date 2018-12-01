@@ -68,7 +68,7 @@ var build_airlines_interface = function() {
         body.append(home_btn);
         let btitle=$('<h1 class="btitle">Book a Flight!</h1>');
         body.append(btitle);
-        let btext=$('<p class="btext">placeholder<p>');
+        let btext=$('<p class="btext">Yay! You know where you want to go! Simply follow the instructions to input your information and book your flight!</p>');
         body.append(btext);
 
         let dptext=$('<p class="dptext">Enter a departure location:</p>');
