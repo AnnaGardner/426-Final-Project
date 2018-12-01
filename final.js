@@ -72,11 +72,6 @@ var build_airlines_interface = function() {
         let arrive_place=$('<input type="text" class="arrive_place"></input>');
         attext.append(arrive_place);
 
-        let partyt=$('<p class="partyt">Number of people traveling in your party (including yourself):</p>');
-        body.append(partyt);
-        let party_num=$('<input type="text" class="party_num"></input>');
-        partyt.append(party_num);
-
         let submit_btn=$('<button id="submit_btn">Submit Information</button>');
         body.append(submit_btn);
 
@@ -88,7 +83,6 @@ var build_airlines_interface = function() {
         let departp=$(this).parent().find('.depart_place').val();
         console.log(departp);
         let arrivep=$(this).parent().find('.arrive_place').val();
-        let partynum=$(this).parent().find('.party_num').val();
 
         //get list of airports
                 $.ajax(root_url+"airports/",
@@ -119,11 +113,12 @@ var build_airlines_interface = function() {
                                 success:(response)=>{
                                     let farray=response;
                                     for(let f=0; f<farray.length;f++){
+                                        console.log("flight array loop");
                                         let fdid = farray[f].departure_id;
                                         let faid = farray[f].arrival_id;
                                         if (fdid==did && faid==aid){
                                             let pid = farray[f].plane_id;
-                                            for(let n=0; n<partynum;n++){
+                                            
                                                 $.ajax(root_url+"seats",{
                                                     type: 'POST',
                                                     xhrFields:{withCredentials:true},
@@ -137,26 +132,34 @@ var build_airlines_interface = function() {
                                                     }
                                                 }
                                             });
-                                        }
-                                        for (let j=0; j<partynum;j++)
-                                        {
-                                            console.log("party");
+                                        
+                                            let personal=$('<')
                                             let fnamet=$('<p class="fnamet">Enter your first name:</p>');
-                                            let fname=$('<input type="text" class="fname"><input>');
-                                            body.append(fnamet);
+                                            let fname=$('<input type="text" class="fname"></input>');
                                             fnamet.append(fname);
-                                            
+                                            body.append(fnamet);
                                             let lnamet=$('<p class="lnamet">Enter your last name:</p>');
-                                            let lname=$('<input type="text" class="lname"><input>');
-                                            body.append(lnamet);
+                                            let lname=$('<input type="text" class="lname"></input>');
                                             lnamet.append(lname);
+                                            body.append(lnamet);
+
+                                            let gendert=$('<p class="gendert">Gender:</p>');
+                                            let gender=$('<input type="text" class="gender"></input>');
+                                            gendert.append(gender);
+                                            body.append(gendert);
+
+                                            let aget=$('<p class="aget">Age:</p>');
+                                            let age=$('<input type="text" class="age"></input>');
+                                            aget.append(age);
+                                            body.append(aget);
 
 
-
+                                            //add book button
+                                            //pull info and create ticket 
 
 
                                            
-                                        }
+                                        
                                          return;
                                         }
                                     }
@@ -167,39 +170,6 @@ var build_airlines_interface = function() {
                     }
                 });
 
-        //getting requested flight 
-         $.ajax(root_url + "flights",
-           {
-           type: 'GET',
-           xhrFields: {withCredentials: true},
-           success: (response) => {
-               //console.log(response);
-               let farray=response;
-               //console.log(response);
-               for(let i=0; i<farray.length;i++){
-                let fid=farray[i].id;
-                let did=farray[i].departure_id;
-                let aid=farray[i].arrival_id;
-
-                
-
-
-
-
-               }
-
-
-
-
-
-
-
-
-           },
-           error: () => {
-               alert(error);
-           }
-           });
     });
 
     
@@ -235,6 +205,16 @@ var build_airlines_interface = function() {
 
 
 };
+
+
+
+/*   search by city --list of all airports    --airport name=city name for simpleness 
+    show the airports at that city (should be one) 
+    when you click on an airport, it will bring up yelp thing with reviews of city and such
+    book ticket button that auto-fills desitnation stuff with specified city --still need depart 
+    */ 
+
+    /* on HOME PAGE ask for where you're leaving from and save that so never ask again 8*/ 
 
 
            
