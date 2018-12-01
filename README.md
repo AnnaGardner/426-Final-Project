@@ -8,3 +8,6 @@ travel planning?
     * live interactive feature (search updates in real time)
     * have three random airlines that we choose to assign to the plane/flights
     
+
+    *@Anna add nav bar
+    *@bethany add home page button to each "page"
