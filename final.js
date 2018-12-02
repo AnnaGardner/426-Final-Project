@@ -20,7 +20,9 @@ $(document).ready(() => {
                }
            },
            success: () => {
-               build_airlines_interface();
+            build_plane_seats();
+            build_airlines_interface();
+            purge_past_date();
            },
            error: (jqxhr, status, error) => {
                alert(error);
@@ -28,6 +30,148 @@ $(document).ready(() => {
            });
     });
 });
+
+var build_plane_seats = function(){
+/*$.ajax(root_url+"data/seats",{
+    type:'DELETE',
+    xhrFields:{withCredentials:true},
+    success:(response)=>{
+
+    }
+});
+
+/*    $.ajax(root_url+"seats",{
+        type:'GET',
+        xhrFields:{withCredentials:true},
+        success:(response)=>{
+            let seats = response;
+           // for (let i=0; i<seats.length;i++){
+             //   let sid = seats[i].id;
+               $.ajax(root_url+"seats/",{
+                type: 'DELETE',
+                xhrFields:{withCredentials:true},
+                success:(response)=>{
+
+                }
+               });
+            }
+        
+    });*/
+
+  /* for (let p=0; p<4;p++){
+        $.ajax(root_url+"planes",{
+            type: 'POST',
+            xhrFields:{withCredentials:true},
+            data:{
+                plane:{
+                    info:"new plane",
+                    name: "A"
+                }
+            }
+        });
+    }*/
+
+    /*$.ajax(root_url+"planes",
+    {
+        type: 'GET',
+        xhrFields:{withCredentials:true},
+        success: (response)=>{
+            let plane = response;
+            for (let i=0; i<plane.length;i++){
+                console.log("a");
+                let p = plane[i];
+                let pid = plane[i].id;
+                for (let r=0; r<6;i++){
+                    let rownum = 0;
+                    if(r<3){
+                        rownum=1;
+                    }else{
+                        rownum=2;
+                    }
+                 $.ajax(root_url+"seats",{
+                    type: 'POST',
+                    xhrFields:{withCredentials:true},
+                    data:{
+                        seat:{
+                            plane_id: pid,
+                            row: r,
+                            number: "A",
+                            info: "empty"
+                        }
+                    }
+                });
+                   }                     
+            }
+        }
+    });*/
+};
+
+function purge_past_date(){
+    var today = new Date(); let dd = today.getDate(); let mm = today.getMonth()+1; let yyyy = today.getFullYear();
+    dd--;
+    if(dd==0&&(mm==5||mm==7||mm==8||mm==10||mm==12)){
+        mm--;
+        dd=30;
+    }
+    if (dd==0&&(mm==4||mm==6||mm==9||mm==11)){
+        mm--;
+        dd=31;
+    }
+    if(dd==0&&mm==3){
+        mm--;
+        dd=28;
+    }
+    if(dd==0&&mm==1){
+        dd==31;
+        mm=12;
+    }
+
+    if(dd<10){
+        dd = "0"+dd;
+    }
+    if(mm<10){
+        mm="0"+mm;
+    }
+    let fulldate = yyyy + "-" + mm + "-" + dd;
+
+    $.ajax(root_url+"instances",{
+        type:'GET',
+        xhrFields: {withCredentials: true},
+        success:(response)=>{
+            let instancearray = response;
+            for(i=0; i<instancearray.length; i++){
+                if(fulldate.localeCompare(instancearray[i].date)==0){
+                    $.ajax(root_url+"tickets",{
+                        type:'GET',
+                        xhrFields:{withCredentials:true},
+                        success:(response)=>{
+                            let seatarray = response;
+                            for(s=0; s<seatarray.length;s++){
+                                if(seatarray[s].instance_id == instancearray[i].id){
+                                    $.ajax(root_url+"tickets",{
+                                        type:'DELETE',
+                                        xhrFields:{withCredentials:true},
+                                        success:(response)=>{
+
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    });
+                    $.ajax(root_url+"instances",{
+                        type:'DELETE',
+                        xhrFields:{withCredentials:true},
+                        success:(response)=>{
+
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+};
 
 var build_airlines_interface = function() {
     let body = $('body');
@@ -102,12 +246,12 @@ var build_airlines_interface = function() {
 
 
     $('body').on('click', '#submit_btn', function () {
-        console.log("submit");
         let departt=$(this).parent().find('.depart_time').val();
         let departp=$(this).parent().find('.depart_place').val();
         console.log(departp);
         let arrivep=$(this).parent().find('.arrive_place').val();
-
+        //add a depart date picker and change the flight searcher to a instance finder 
+        //just say that the depart date is current day
         //get list of airports
                 $.ajax(root_url+"airports/",
                 {
@@ -137,45 +281,53 @@ var build_airlines_interface = function() {
                                 success:(response)=>{
                                     let farray=response;
                                     for(let f=0; f<farray.length;f++){
-                                        console.log("flight array loop");
+                                        //console.log("flight array loop");
+                                        let fid = farray[f].id;
                                         let fdid = farray[f].departure_id;
                                         let faid = farray[f].arrival_id;
                                         if (fdid==did && faid==aid){
                                             let pid = farray[f].plane_id;
-                                            
-                                                $.ajax(root_url+"seats",{
-                                                    type: 'POST',
-                                                    xhrFields:{withCredentials:true},
-                                                    data:{
-                                                     seat:{
-                                                            plane_id: pid,
-                                                            row: 1,        //CHANGE THIS EVENTUALLY!!!!
-                                                        number: "A",       //either a or b 
-                                                        cabin: "economy",
-                                                        is_window:true     
+                                            $.ajax(root_url+"instances",{
+                                                type: 'GET',
+                                                xhrFields:{withCredentials:true},
+                                                success:(response)=>{
+                                                    let inarray = response;
+                                                    for(i=0; i<inarray.length;i++){
+                                                        console.log(inarray[i].date);
+                                                        //let  = inarray[i].id;
+                                                        let fin = inarray[i].flight_id;
+                                                        let din = inarray[i].date;
+                                                        let emptytest = inarray[i].info;
+                                                        var today = new Date(); let dd = today.getDate(); let mm = today.getMonth()+1; let yyyy = today.getFullYear();
+                                                        if(dd<10){
+                                                            dd = "0"+dd;
+                                                        }
+                                                        if(mm<10){
+                                                            mm="0"+mm;
+                                                        }
+                                                        let fulldate = yyyy + "-" + mm + "-" + dd;
+                                                        console.log(fin + " " + fid);
+                                                        if (fin==fid){
+                                                            if (fulldate.localeCompare(din)==0){
+                                                                if (emptytest.localeCompare("open")==0){
+                                                                    createticket(inarray[i].id,pid,fin);
+                                                                
+                                                            } else {
+                                                                let instanceid = findnewinstance(dd,mm, yyyy,fid);
+                                                                createticket(instanceid,pid,fin);
+                                                            }
+                                                        } else {
+                                                            //check if the next day has an instance and loop that test until there are no more flights
+                                                            let instanceid = findnewinstance(dd, mm, yyyy, fid);
+                                                            createticket(instaceid,pid,fin);
+                                                        }
                                                     }
                                                 }
-                                            });
-                                        
-                                            let personal=$('<')
-                                            let fnamet=$('<p class="fnamet">Enter your first name:</p>');
-                                            let fname=$('<input type="text" class="fname"></input>');
-                                            fnamet.append(fname);
-                                            body.append(fnamet);
-                                            let lnamet=$('<p class="lnamet">Enter your last name:</p>');
-                                            let lname=$('<input type="text" class="lname"></input>');
-                                            lnamet.append(lname);
-                                            body.append(lnamet);
-
-                                            let gendert=$('<p class="gendert">Gender:</p>');
-                                            let gender=$('<input type="text" class="gender"></input>');
-                                            gendert.append(gender);
-                                            body.append(gendert);
-
-                                            let aget=$('<p class="aget">Age:</p>');
-                                            let age=$('<input type="text" class="age"></input>');
-                                            aget.append(age);
-                                            body.append(aget);
+                                                }
+                                            })
+                                            
+                                            
+                                           // let personal=$('<')
 
 
                                             //add book button
@@ -196,12 +348,136 @@ var build_airlines_interface = function() {
 
     });
 
-    
+    function createnewflightinstance(date, flightid){
 
+        $.ajax(root_url+"instances",{
+            type: 'POST',
+            xhrFields:{withCredentials:true},
+            data:{
+                instance:{
+                    flight_id: flightid,
+                    date:date
+                }
+            }
+        });
 
+        $.ajax(root_url+"instances",{
+            type:'GET',
+            xhrFields:{withCredentials:true},
+            success:(response)=>{
+                let instancearray = response;
+                for(i=0;i<instancearray.length;i++){
+                    if (instancearray[i].flight_id==flightid && date.localeCompare(instancearray[i].date)==0){
+                        return instancearray[i].id;
+                    }
+                }
+            }
+        })
+    };
 
+ function findnewinstance(dd, mm, yyyy, fid){
+        dd++;
+        if (mm==12 && dd==32){
+            mm=1;
+            dd=1;
+            yyyy++;
+        }
+        if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
+         mm++;
+         dd=1;
+         } else if (mm==2 && dd==29){
+         mm++;
+         dd=1;
+         } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
+            mm++;
+            dd=1;
+        }
+        if (dd<10){
+            dd="0"+dd;
+        }
+        if (mm<10){
+            mm="0"+mm;
+        }
 
+        let newdate = yyyy + "-" + mm + "-" + dd;
 
+        $.ajax(root_url+"instances",{
+            type:'GET',
+            xhrFields:{withCredentials:true},
+            success:(response)=>{
+                let instancearray = response;
+                for(i=0; i<instancearray.length; i++){
+                    let instancedate = instancearray[i].date;
+                    if(instancedate.localeCompare(newdate)==0 && fid==instancearray[i].flight_id){
+                        return instancearray[i].id;
+                    } else {
+                        findnewinstance(dd, mm, yyyy, fid);
+                    }
+                }
+               return createnewinstance(newdate, fid);
+            }
+        });
+};
+
+function createticket(instanceid, planeid, flightid){
+
+        let fnamet=$('<p class="fnamet">Enter your first name:</p>');
+        let fname=$('<input type="text" class="fname"></input>');
+        fnamet.append(fname);
+        body.append(fnamet);
+        let lnamet=$('<p class="lnamet">Enter your last name:</p>');
+        let lname=$('<input type="text" class="lname"></input>');
+        lnamet.append(lname);
+        body.append(lnamet);
+        
+        let gendert=$('<p class="gendert">Gender:</p>');
+        let gender=$('<input type="text" class="gender"></input>');
+        gendert.append(gender);
+        body.append(gendert);
+
+        let aget=$('<p class="aget">Age:</p>');
+        let age=$('<input type="text" class="age"></input>');
+        aget.append(age);
+        body.append(aget);
+
+        let persubmit_btn=$('<button id="persubmit_btn">Submit Personal Information</button>');
+        body.append(persubmit_btn);
+        $('body').on('click', '#persubmit_btn', function () {
+            let fn=$(this).parent().find('.fname').val();
+            let ln=$(this).parent().find('.lname').val();
+            let g=$(this).parent().find('.gender').val();
+            let a=$(this).parent().find('.age').val();
+
+            $.ajax(root_url+"seats",{
+                type:'GET',
+                xhrFields:{withCredentials:true},
+                success:(response)=>{
+                    let seatarray=response;
+                    for(i=0;i<seatarray.length;i++){
+                        console.log(seatarray[i].id);
+
+                        if(seatarray[i].plane_id==planeid){
+                            $.ajax(root_url+"tickets",{
+                                type:'POST',
+                                xhrFields:{withCredentials:true},
+                                data:{
+                                    ticket:{
+                                        first_name: fn,
+                                        last_name:ln,
+                                        age:a,
+                                        gemder:g,
+                                        seat_id:seatarray[i].id,
+                                        instance_id: instanceid
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+
+        });
+    };
 
 
 
