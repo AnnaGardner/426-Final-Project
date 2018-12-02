@@ -465,7 +465,7 @@ function createticket(instanceid, planeid, flightid){
                                         first_name: fn,
                                         last_name:ln,
                                         age:a,
-                                        gemder:g,
+                                        gender:g,
                                         seat_id:seatarray[i].id,
                                         instance_id: instanceid
                                     }
