@@ -375,7 +375,7 @@ var build_airlines_interface = function() {
     };
 
     function getnewinstance(date,flightid){
-$.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(flightid),{
+        $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(flightid),{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
