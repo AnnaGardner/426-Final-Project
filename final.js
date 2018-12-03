@@ -259,21 +259,27 @@ var build_airlines_interface = function() {
         //filtering by substring search 
         $('.myInput').on("keyup",function(){
         var value=$(this).val().toLowerCase();
- /*-here*/       $(".").filter(function(){
+        $(".airport").filter(function(){
             $(this).toggle($(this).text().toLowerCase().indexOf(value)> -1);
             });
         });
         
+
+		let airportList =  $('<div class="airportlist"></div>');
+		body.append(airportList);      
         $.ajax(root_url+"airports",{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
-                for(let a=0;a<response.length;a++)
+            	let array=response; 
+            	console.log(response);
+                for(let a=0;a<array.length;a++)
                 {
-                    //this is appending to every page!
-                    body.after(response[a].name+" airport in "+response[a].city+'<br>');
+                	let adiv=create_airport_div(array[a]);
+                	console.log(adiv);
+                    airportList.append(adiv);
+                    
                 }
-                 //need to somehow make that a class so I can call it on like 262
 
 
             }
@@ -283,6 +289,14 @@ var build_airlines_interface = function() {
 
 
     });
+
+    let create_airport_div=(airport)=>{
+    	let adiv = $('<div class = "airport" id = '+airport.id+'></div>');
+    	let airportname = adiv.append('<div class = "airportName">'+airport.name+', '+airport.city+'</div>');
+    	adiv.append(airportname);
+    	return adiv;
+
+    };
 
 
     $('body').on('click', '#submit_btn', function () {
