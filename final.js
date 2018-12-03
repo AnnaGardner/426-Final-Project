@@ -296,41 +296,48 @@ var build_airlines_interface = function() {
                                                 xhrFields:{withCredentials:true},
                                                 success:(response)=>{
                                                     let inarray = response;
-                                                    for(i=0; i<inarray.length;i++){
-                                                        let fin = inarray[i].flight_id;
-                                                        let din = inarray[i].date;
-                                                        let info = inarray[i].info;
-                                                        var today = new Date(); let dd = today.getDate(); let mm = today.getMonth()+1; let yyyy = today.getFullYear();
-                                                        if(dd<10){
+                                                    var today = new Date(); let dd = today.getDate(); let mm = today.getMonth()+1; let yyyy = today.getFullYear();
+                                                    if(dd<10){
                                                             dd = "0"+dd;
                                                         }
                                                         if(mm<10){
                                                             mm="0"+mm;
                                                         }
                                                         let fulldate = yyyy + "-" + mm + "-" + dd;
+                                                    for(i=0; i<inarray.length;i++){
+                                                        //let fin = inarray[i].flight_id;
+                                                        let din = inarray[i].date;
+                                                        let info = inarray[i].info;
+                                                    
                                                         //console.log(fin + " " + fid);
                                                        
                                                             if (fulldate.localeCompare(din)==0){
-                                                                if(!testifinstanceisfull(fin, inarray[i].id, fulldate, info)){
-                                                                    createticket(inarray[i].id,pid,fin, info,fulldate);
+                                                                if(!testifinstanceisfull(fid, inarray[i].id, fulldate, info)){
+                                                                    createticket(inarray[i].id,pid,fid, info,fulldate);
                                                                     return;
-                                                                 } else {
+                                                                 } /*else {
                                                                         let instanceid = findnewinstance(dd,mm,yyyy,fid);
                                                                         let instanceinfo = getinstanceinfo(instanceid);
                                                                         let date = getinstancedate(instanceid);
                                                                         createticket(instanceid,pid,fin, instanceinfo,date);
                                                                         return;
-                                                                    }
-                                                        } else {
-                                                            //check if the next day has an instance and loop that test until there are no more flights
+                                                                    }*/
+                                                        break;}/*else {
+                                                           //check if the next day has an instance and loop that test until there are no more flights
                                                             let instanceid = findnewinstance(dd, mm, yyyy, fid);
                                                             let instanceinfo = getinstanceinfo(instanceid);
                                                             let date = getinstancedate(instanceid);
                                                             createticket(instanceid,pid,fin,instanceinfo,date);
                                                             return;
-                                                        }
+                                                        }*/
                                                     
                                                 }
+                                                //check if the next day has an instance and loop that test until there are no more flights
+                                                            let instanceid = findnewinstance(dd, mm, yyyy, fid);
+                                                            let instanceinfo = getinstanceinfo(instanceid);
+                                                            let date = getinstancedate(instanceid);
+                                                            createticket(instanceid,pid,fid,instanceinfo,date);
+                                                            return;
                                                 }
                                             })
                                             
@@ -357,7 +364,7 @@ var build_airlines_interface = function() {
     });
 
     function createnewinstance(date, flightid){
-
+        let id;
         $.ajax(root_url+"instances",{
             type: 'POST',
             xhrFields:{withCredentials:true},
@@ -367,9 +374,16 @@ var build_airlines_interface = function() {
                     date:date,
                     info:"0"
                 }
+            },
+            success:(response)=>{
+                //*******************************
+                id=response.id;
             }
+
         });
-        return getnewinstance(date,flightid);
+        console.log("id"+id);
+        return id;//getnewinstance(date,flightid);
+            
 
         
     };
@@ -413,6 +427,7 @@ var build_airlines_interface = function() {
             success:(response)=>{
                 let array = response;
                 for (i=0;array.length;i++){
+                    console.log(array[i].date);
                     return array[i].date;
                 }
             }
@@ -456,9 +471,9 @@ var build_airlines_interface = function() {
                         dd="0"+dd;
                     }
 
-                    newdate = yyyy + "-" + mm + "-" + dd;
-                    let instancedate = instancearray[i].date;
-                    //console.log(newdate);
+                   let newdate = yyyy + "-" + mm + "-" + dd;
+                   let instancedate = instancearray[i].date;
+                    console.log(newdate);
                     if(instancedate.localeCompare(newdate)==0){
                         if(testifinstanceisfull(instancearray[i].flight_id,instancedate,instancearray[i].info)){
                              return findnewinstance(dd,mm,yyyy,fid);
