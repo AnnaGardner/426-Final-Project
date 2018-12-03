@@ -313,18 +313,21 @@ var build_airlines_interface = function() {
                                                             if (fulldate.localeCompare(din)==0){
                                                                 if(!testifinstanceisfull(fin, inarray[i].id, fulldate, info)){
                                                                     createticket(inarray[i].id,pid,fin, info,fulldate);
+                                                                    return;
                                                                  } else {
-                                                                        let instanceid = findnewinstance(dd,mm,yyy,fid);
+                                                                        let instanceid = findnewinstance(dd,mm,yyyy,fid);
                                                                         let instanceinfo = getinstanceinfo(instanceid);
                                                                         let date = getinstancedate(instanceid);
                                                                         createticket(instanceid,pid,fin, instanceinfo,date);
+                                                                        return;
                                                                     }
                                                         } else {
                                                             //check if the next day has an instance and loop that test until there are no more flights
                                                             let instanceid = findnewinstance(dd, mm, yyyy, fid);
                                                             let instanceinfo = getinstanceinfo(instanceid);
                                                             let date = getinstancedate(instanceid);
-                                                            createticket(instaceid,pid,fin,instanceinfo,date);
+                                                            createticket(instanceid,pid,fin,instanceinfo,date);
+                                                            return;
                                                         }
                                                     
                                                 }
@@ -353,7 +356,7 @@ var build_airlines_interface = function() {
 
     });
 
-    function createnewflightinstance(date, flightid){
+    function createnewinstance(date, flightid){
 
         $.ajax(root_url+"instances",{
             type: 'POST',
@@ -366,19 +369,27 @@ var build_airlines_interface = function() {
                 }
             }
         });
+        return getnewinstance(date,flightid);
 
-        $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(flightid),{
+        
+    };
+
+    function getnewinstance(date,flightid){
+$.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(flightid),{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
                 let instancearray = response;
                 for(i=0;i<instancearray.length;i++){
+                    console.log(instancearray.length);
+                  
                     if (date.localeCompare(instancearray[i].date)==0){
+                        //console.log("id"+instancearray[i].id)
                         return instancearray[i].id;
                     }
                 }
             }
-        })
+        });
     };
 
     function getinstanceinfo(instanceid){
@@ -395,7 +406,7 @@ var build_airlines_interface = function() {
         });
     };
 
-    function getinstanceddate(instanceid){
+    function getinstancedate(instanceid){
         $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
             type:'GET',
             xhrFields:{withCredentials:true},
@@ -409,47 +420,55 @@ var build_airlines_interface = function() {
     }
 
  function findnewinstance(dd, mm, yyyy, fid){
-        dd++;
-        if (mm==12 && dd==32){
-            mm=1;
-            dd=1;
-            yyyy++;
-        }
-        if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
-         mm++;
-         dd=1;
-         } else if (mm==2 && dd==29){
-         mm++;
-         dd=1;
-         } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
-            mm++;
-            dd=1;
-        }
-        if (dd<10){
-            dd="0"+dd;
-        }
-        if (mm<10){
-            mm="0"+mm;
-        }
-
-        let newdate = yyyy + "-" + mm + "-" + dd;
-
-        $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(fid),{
+    let newdate;
+            $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(fid),{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
                 let instancearray = response;
                 for(i=0; i<instancearray.length; i++){
+                    dd++;
+                    if (mm==12 && dd==32){
+                        mm=1;
+                        dd=1;
+                        yyyy++;
+                    }
+                    if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
+                     mm++;
+                     dd=1;
+                     if (mm<10){
+                        mm="0"+mm;
+                    }
+                     } else if (mm==2 && dd==29){
+                     mm++;
+                     dd=1;
+                     if (mm<10){
+                        mm="0"+mm;
+                    }
+                     } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
+                        mm++;
+                        dd=1;
+                        if (mm<10){
+                        mm="0"+mm;
+                    }
+                    }
+                    if (dd<10){
+                        dd="0"+dd;
+                    }
+
+                    newdate = yyyy + "-" + mm + "-" + dd;
                     let instancedate = instancearray[i].date;
+                    //console.log(newdate);
                     if(instancedate.localeCompare(newdate)==0){
                         if(testifinstanceisfull(instancearray[i].flight_id,instancedate,instancearray[i].info)){
-                            findnewinstance(dd,mm,yyyy,fid);
+                             return findnewinstance(dd,mm,yyyy,fid);
                         } else {
-                        return instancearray[i].id;
+                            return instancearray[i].id;
                         }
-                    } else {
-                        findnewinstance(dd, mm, yyyy, fid);
-                    }
+                    } /*else {
+                        console.log("D");
+                        return findnewinstance(dd, mm, yyyy, fid);
+                    }*/
                 }
                return createnewinstance(newdate, fid);
             }
@@ -457,7 +476,8 @@ var build_airlines_interface = function() {
 };
 
 function testifinstanceisfull(flightid, instanceid, date, info){
-    let returntext=false;
+   let returntext=false;
+    console.log(info);
     if (info.localeCompare("full")==0){
         returntext=true;
     } else {
@@ -465,17 +485,19 @@ function testifinstanceisfull(flightid, instanceid, date, info){
         //seatcount++;
         let newinfo;
         //THIS IS HOW WE SET HOW MANY PEOPLE CAN BE ON EACH PLANE
-        if(seatcount==20){
+        if(seatcount==2){
             returntext=true;
         
         $.ajax(root_url+"instances/"+encodeURIComponent(instanceid),{
             type:'PUT',
             xhrFields:{withCredentials:true},
             data:{
+                instance:{
                 flight_id: flightid,
                 date:date,
                 info:"full"
             }
+        }
         });
     }
 }
@@ -511,6 +533,24 @@ function createticket(instanceid, planeid, flightid,info,date){
             let g=$(this).parent().find('.gender').val();
             let a=$(this).parent().find('.age').val();
 
+            let seatcount = parseInt(info,10);
+            //how to get instance's info
+            seatcount++;
+            let newinfo = ""+ seatcount;
+            console.log("in"+instanceid);
+            $.ajax(root_url+"instances/" + encodeURIComponent(instanceid),{
+                type:'PUT',
+                xhrFields:{withCredentials:true},
+                data:{
+                    instance:{
+                    flight_id: flightid,
+                    date:date,
+                    info:newinfo
+                }
+            }
+            })
+
+
             $.ajax(root_url+"seats?filter[plane_id]="+encodeURIComponent(planeid),{
                 type:'GET',
                 xhrFields:{withCredentials:true},
@@ -541,22 +581,8 @@ function createticket(instanceid, planeid, flightid,info,date){
                 }
             });
 
-            let seatcount = parseInt(info,10);
-            //how to get instance's info
-            seatcount++;
-            let newinfo = ""+ seatcount;
-            console.log(instanceid);
-            $.ajax(root_url+"instances/" + encodeURIComponent(instanceid),{
-                type:'PUT',
-                xhrFields:{withCredentials:true},
-                data:{
-                    flight_id: flightid,
-                    date:date,
-                    info:newinfo
-                }
-            })
-
         });
+            
     };
 
 
