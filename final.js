@@ -410,20 +410,20 @@ var build_airlines_interface = function() {
 
     function getinstanceinfo(instanceid){
         //do a filter thing
-        var nr;
+        var nose=true;
         $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
                 let array = response;
-                for(i = 0;array.length;i++){
-                     nr=array[i].info;
-                    return nr;
+                for(i = 0;i<array.length;i++){
+                     nose=array[i].info;console.log("E"+nose);
+                    return nose;
                 }
             }
         });
-        console.log("P"+nr);
-        return nr;
+        console.log("P"+nose);
+        return nose;
     };
 
     function getinstancedate(instanceid){
@@ -433,7 +433,7 @@ var build_airlines_interface = function() {
             xhrFields:{withCredentials:true},
             success:(response)=>{
                 let array = response;
-                for (i=0;array.length;i++){
+                for (i=0;i<array.length;i++){
                     console.log(array[i].date);
                      nr= array[i].date;
                     return nr;
@@ -616,30 +616,6 @@ function createticket(instanceid, planeid, flightid,info,date){
         });
             
     };
-
-
-
-
-   /* for(var i=0; i<3; i++){
-        $.ajax(root_url + "flights",
-           {
-           type: 'POST',
-           data: {
-               "flight": {
-                "departs_at":   "14:30",
-                "arrives_at":   "17:10",
-                "number":       "AA 2667",
-                "departure_id": 8,
-                "arrival_id":   9
-                }
-           },
-           xhrFields: {withCredentials: true},
-           success: (response) => {
-            //console.log(airline);
-           }
-        });
-    };
-*/
 
 
 };
