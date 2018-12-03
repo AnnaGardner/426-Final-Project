@@ -334,8 +334,10 @@ var build_airlines_interface = function() {
                                                 }
                                                 //check if the next day has an instance and loop that test until there are no more flights
                                                             let instanceid = findnewinstance(dd, mm, yyyy, fid);
+                                                            console.log("B"+instanceid);
                                                             let instanceinfo = getinstanceinfo(instanceid);
                                                             let date = getinstancedate(instanceid);
+                                                            console.log("D"+instanceinfo);
                                                             createticket(instanceid,pid,fid,instanceinfo,date);
                                                             return;
                                                 }
@@ -377,7 +379,7 @@ var build_airlines_interface = function() {
             },
             success:(response)=>{
                 //*******************************
-                id=response.id;
+                id=response.json().id;
             }
 
         });
@@ -408,19 +410,24 @@ var build_airlines_interface = function() {
 
     function getinstanceinfo(instanceid){
         //do a filter thing
+        var nr;
         $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
                 let array = response;
                 for(i = 0;array.length;i++){
-                    return array[i].info;
+                     nr=array[i].info;
+                    return nr;
                 }
             }
         });
+        console.log("P"+nr);
+        return nr;
     };
 
     function getinstancedate(instanceid){
+        var nr;
         $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
             type:'GET',
             xhrFields:{withCredentials:true},
@@ -428,14 +435,17 @@ var build_airlines_interface = function() {
                 let array = response;
                 for (i=0;array.length;i++){
                     console.log(array[i].date);
-                    return array[i].date;
+                     nr= array[i].date;
+                    return nr;
                 }
             }
-        })
-    }
+        });
+        return nr;
+    };
 
  function findnewinstance(dd, mm, yyyy, fid){
     let newdate;
+    var nr;
             $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(fid),{
             type:'GET',
             xhrFields:{withCredentials:true},
@@ -473,14 +483,19 @@ var build_airlines_interface = function() {
 
                    let newdate = yyyy + "-" + mm + "-" + dd;
                    let instancedate = instancearray[i].date;
-                    console.log(newdate);
-                    if(instancedate.localeCompare(newdate)==0){
-                        if(testifinstanceisfull(instancearray[i].flight_id,instancedate,instancearray[i].info)){
-                             return findnewinstance(dd,mm,yyyy,fid);
-                        } else {
-                            return instancearray[i].id;
+                    console.log("A"+instancearray[i].info);
+                    let test = instancearray[i].info;
+                    //if(instancedate.localeCompare(newdate)==0){
+                        if(!test.localeCompare("full")==0/*!testifinstanceisfull(instancearray[i].flight_id,instancedate,instancearray[i].info)*/){
+                             /*return findnewinstance(dd,mm,yyyy,fid);
+                        } else {*/
+                            console.log("C"+instancearray[i].id)
+                            nr = instancearray[i].id;
+                            return nr;
+                        } else{
+                            return false;
                         }
-                    } /*else {
+                    /*} else {
                         console.log("D");
                         return findnewinstance(dd, mm, yyyy, fid);
                     }*/
@@ -488,6 +503,8 @@ var build_airlines_interface = function() {
                return createnewinstance(newdate, fid);
             }
         });
+            return nr;
+            console.log("DDDD");
 };
 
 function testifinstanceisfull(flightid, instanceid, date, info){
