@@ -236,13 +236,52 @@ var build_airlines_interface = function() {
     });
 
 
-    $('body').on('click', '#home_btn', function () {   //do I put this here?? 
-        console.log("I'm home");
+    $('body').on('click', '#home_btn', function () {   
         build_airlines_interface();
 
     });
 
+    $('body').on('click', '#search_btn', function () {
+        console.log("browse destination");
+        let body=$('body');
+        body.empty();
+        let home_btn=$('<button id="home_btn">Home Page</button>');
+        body.append(home_btn);
+        let stitle=$('<h1 class="btitle">Search for a Destination!</h1>');
+        body.append(stitle);
+        let stext=$('<p class="stext">put something here</p>');
+        body.append(stext);
 
+
+        //search bar
+        let myinput=$("<input class='myInput' type='text' placeholder='Search for a city...''>");
+        body.append(myinput);
+        //filtering by substring search 
+        $('.myInput').on("keyup",function(){
+        var value=$(this).val().toLowerCase();
+ -here       $(".").filter(function(){
+            $(this).toggle($(this).text().toLowerCase().indexOf(value)> -1);
+            });
+        });
+        
+        $.ajax(root_url+"airports",{
+            type:'GET',
+            xhrFields:{withCredentials:true},
+            success:(response)=>{
+                for(let a=0;a<response.length;a++)
+                {
+                    body.after(response[a].name+" airport in "+response[a].city+'<br>');
+                }
+                 //need to somehow make that a class so I can call it on like 262
+
+
+            }
+        });
+
+
+
+
+    });
 
 
     $('body').on('click', '#submit_btn', function () {
@@ -619,6 +658,7 @@ function createticket(instanceid, planeid, flightid,info,date){
 
 
 };
+//};
 
 
 
