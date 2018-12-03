@@ -389,7 +389,8 @@ var build_airlines_interface = function() {
                                                 //check if the next day has an instance and loop that test until there are no more flights
                                                             let instanceid = findnewinstance(dd, mm, yyyy, fid);
                                                             console.log(dd+" "+mm+" "+yyyy+" "+fid);
-//Undefined right here!!                                                            
+//Undefined right here!!                                                
+//findnewinstance & getinstanceinfo & getinstancedate all return undefined because of the return values, so I can't tell if the logic works!!            
                                                             console.log("B"+instanceid);  
                                                             let instanceinfo = getinstanceinfo(instanceid);
                                                             let date = getinstancedate(instanceid);
