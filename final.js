@@ -107,7 +107,7 @@ var build_plane_seats = function(){
 };
 
 function purge_past_date(){
-    var today = new Date(); let dd = today.getDate(); let mm = today.getMonth()+1; let yyyy = today.getFullYear();
+   /* var today = new Date(); let dd = today.getDate(); let mm = today.getMonth()+1; let yyyy = today.getFullYear();
     dd--;
     if(dd==0&&(mm==5||mm==7||mm==8||mm==10||mm==12)){
         mm--;
@@ -148,7 +148,7 @@ function purge_past_date(){
                             let seatarray = response;
                             for(s=0; s<seatarray.length;s++){
                                 if(seatarray[s].instance_id == instancearray[i].id){
-                                    $.ajax(root_url+"tickets",{
+                                    $.ajax(root_url+"tickets/"+,{
                                         type:'DELETE',
                                         xhrFields:{withCredentials:true},
                                         success:(response)=>{
@@ -169,7 +169,7 @@ function purge_past_date(){
                 }
             }
         }
-    });
+    });*/
 
 };
 
@@ -259,7 +259,7 @@ var build_airlines_interface = function() {
         //filtering by substring search 
         $('.myInput').on("keyup",function(){
         var value=$(this).val().toLowerCase();
- -here       $(".").filter(function(){
+ /*-here*/       $(".").filter(function(){
             $(this).toggle($(this).text().toLowerCase().indexOf(value)> -1);
             });
         });
@@ -270,6 +270,7 @@ var build_airlines_interface = function() {
             success:(response)=>{
                 for(let a=0;a<response.length;a++)
                 {
+                    //this is appending to every page!
                     body.after(response[a].name+" airport in "+response[a].city+'<br>');
                 }
                  //need to somehow make that a class so I can call it on like 262
