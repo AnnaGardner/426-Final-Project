@@ -308,6 +308,15 @@ var build_airlines_interface = function() {
         //add a depart date picker and change the flight searcher to a instance finder 
         //just say that the depart date is current day
         //get list of airports
+
+                                                            var today = new Date(); var dd = today.getDate(); var mm = today.getMonth()+1; var yyyy = today.getFullYear();
+                                                    if(dd<10){
+                                                            dd = "0"+dd;
+                                                        }
+                                                        if(mm<10){
+                                                            mm="0"+mm;
+                                                        }
+                                                        var fulldate = yyyy + "-" + mm + "-" + dd;
                 $.ajax(root_url+"airports/",
                 {
                     type: 'GET',
@@ -319,18 +328,59 @@ var build_airlines_interface = function() {
                         let airarray=response;
                         for(i=0;i<airarray.length;i++){
                             var aircity=airarray[i].city;
+
                             if(aircity.localeCompare(departp)==0){
+                                console.log("B");
                                 depart=true;
-                                did = airarray[i].id
+                                did = airarray[i].id;
+                            } else {
+                                did = airarray[i].id;
                             }
                             if (aircity.localeCompare(arrivep)==0){
                                 arrive=true;
-                                aid = airarray[i].id
+                                aid = airarray[i].id;
+                            } else{
+                               aid = airarray[i].id;
                             }
                             if(depart&&arrive){
                                 break;
                             }
 
+                        }
+
+                        //add a thing that creates a new flight and a new instance based on what they've typed if they say something new
+                        //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
+
+
+                            $.ajax(root_url+"flights",{
+                                type:'POST',
+                                xhrFields:{withCredentials:true},
+                                data:{
+                                    flight:{
+                                        departs_at:12,
+                                        arrives_at:2,
+                                        number:1,
+                                        departure_id: did,
+                                        arrival_id:aid
+                                    }
+                                },
+                                success:(response)=>{
+                                    newflightid = response.id;
+                                    depart=true;arrive=true;
+                                    console.log("A");
+                                    $.ajax(root_url+"instances",{
+                                        type:'POST',
+                                        xhrFields:{withCredentials:true},
+                                        data:{
+                                            instance:{
+                                                flight_id:newflightid,
+                                                date: fulldate,
+                                                info: "0"
+                                            }
+                                        }
+                                    });
+                                }
+                            });
                         }
 
                         if(depart&&arrive){
@@ -351,14 +401,7 @@ var build_airlines_interface = function() {
                                                 xhrFields:{withCredentials:true},
                                                 success:(response)=>{
                                                     var inarray = response;
-                                                    var today = new Date(); var dd = today.getDate(); var mm = today.getMonth()+1; var yyyy = today.getFullYear();
-                                                    if(dd<10){
-                                                            dd = "0"+dd;
-                                                        }
-                                                        if(mm<10){
-                                                            mm="0"+mm;
-                                                        }
-                                                        var fulldate = yyyy + "-" + mm + "-" + dd;
+
                                                     for(i=0; i<inarray.length;i++){
                                                         var din = inarray[i].date;
                                                         var info = inarray[i].info;
@@ -366,7 +409,7 @@ var build_airlines_interface = function() {
                                                                     console.log("creating ticket for today's instance")
                                                                 	//console.log("about to call createticket");
                                                                     //console.log("inarrayid"+inarray[i]);
-                                                                    createticket(inarray[i].id,pid,fid, info,dd,mm,yyyy);
+                                                                    createticket(inarray[i].id,pid,fid, info,dd,mm,yyyy,din);
                                                                     return;
                                                                  } else {
                                                                      dd++;
@@ -399,6 +442,7 @@ var build_airlines_interface = function() {
                                                                                 }
 
                                                                                fulldate = yyyy + "-" + mm + "-" + dd;
+                                                                               console.log("fulldate"+fulldate);
                                                         }
                                                     }
                                                         /*else {
@@ -665,9 +709,10 @@ function testifinstanceisfull(flightid, instanceid, date, info){
     return returntext;
 };
 
-function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy){
+function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
     console.log("createtickedid="+instanceid);
     console.log("Creating ticket");
+    var newdate;
 
         let fnamet=$('<p class="fnamet">Enter your first name:</p>');
         let fname=$('<input type="text" class="fname"></input>');
@@ -745,6 +790,7 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy){
                 }
             },
             success:(response)=>{
+                console.log("newdate"+newdate);
                 //*******************************
                 //console.log(response);
                /* id=response.id; 
@@ -757,14 +803,14 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy){
             }
            // console.log("in= "+instanceid);
 
-           var date = yyyy+"-"+mm+"-"+dd;
+           //var date = yyyy+"-"+mm+"-"+dd;
             $.ajax(root_url+"instances/" + encodeURIComponent(instanceid),{
                 type:'PUT',
                 xhrFields:{withCredentials:true},
                 data:{
                     instance:{
                     flight_id: flightid,
-                    date:date,
+                    date:orgdate,
                     info:newinfo
                 }
             }
