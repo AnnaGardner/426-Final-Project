@@ -359,27 +359,48 @@ var build_airlines_interface = function() {
                                                         }
                                                         var fulldate = yyyy + "-" + mm + "-" + dd;
                                                     for(i=0; i<inarray.length;i++){
-                                                        //let fin = inarray[i].flight_id;
                                                         var din = inarray[i].date;
                                                         var info = inarray[i].info;
-                                                    
-                                                        //console.log(fin + " " + fid);
-                                                       
-                                                            if (fulldate.localeCompare(din)==0){
-                                                                if(!testifinstanceisfull(fid, inarray[i].id, fulldate, info)){
+                                                           if(!testifinstanceisfull(fid, inarray[i].id, din, info)){
                                                                     console.log("creating ticket for today's instance")
                                                                 	//console.log("about to call createticket");
                                                                     //console.log("inarrayid"+inarray[i]);
                                                                     createticket(inarray[i].id,pid,fid, info,dd,mm,yyyy);
                                                                     return;
-                                                                 } /*else {
-                                                                        let instanceid = findnewinstance(dd,mm,yyyy,fid);
-                                                                        let instanceinfo = getinstanceinfo(instanceid);
-                                                                        let date = getinstancedate(instanceid);
-                                                                        createticket(instanceid,pid,fin, instanceinfo,date);
-                                                                        return;
-                                                                    }*/
-                                                        break;}/*else {
+                                                                 } else {
+                                                                     dd++;
+                                                                        if (mm==12 && dd==32){
+                                                                            mm=1;
+                                                                               dd=1;
+                                                                                    yyyy++;
+                                                                                }
+                                                                                if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
+                                                                                    mm++;
+                                                                                    dd=1;
+                                                                                    if (mm<10){
+                                                                                        mm="0"+mm;
+                                                                                    }
+                                                                                 } else if (mm==2 && dd==29){
+                                                                                    mm++;
+                                                                                    dd=1;
+                                                                                    if (mm<10){
+                                                                                        mm="0"+mm;
+                                                                                    }
+                                                                                 } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
+                                                                                    mm++;
+                                                                                    dd=1;
+                                                                                    if (mm<10){
+                                                                                        mm="0"+mm;
+                                                                                    }
+                                                                                }
+                                                                                if (dd<10){
+                                                                                    dd="0"+dd;
+                                                                                }
+
+                                                                               fulldate = yyyy + "-" + mm + "-" + dd;
+                                                        }
+                                                    }
+                                                        /*else {
                                                            //check if the next day has an instance and loop that test until there are no more flights
                                                             let instanceid = findnewinstance(dd, mm, yyyy, fid);
                                                             let instanceinfo = getinstanceinfo(instanceid);
@@ -388,7 +409,7 @@ var build_airlines_interface = function() {
                                                             return;
                                                         }*/
                                                     
-                                                }
+                                                //}
                                                 //check if the next day has an instance and loop that test until there are no more flights
                                                            /* console.log("looking for next open instance");
                                                             var instanceid = findnewinstance(dd, mm, yyyy, fid);
