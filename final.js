@@ -205,7 +205,7 @@ var build_airlines_interface = function() {
 
 
     $('body').on('click', '#book_btn', function () {
-        console.log("book");
+        //console.log("book");
         let body=$('body');
         body.empty();
         let home_btn=$('<button id="home_btn">Home Page</button>');
@@ -242,7 +242,7 @@ var build_airlines_interface = function() {
     });
 
     $('body').on('click', '#search_btn', function () {
-        console.log("browse destination");
+        //console.log("browse destination");
         let body=$('body');
         body.empty();
         let home_btn=$('<button id="home_btn">Home Page</button>');
@@ -272,11 +272,11 @@ var build_airlines_interface = function() {
             xhrFields:{withCredentials:true},
             success:(response)=>{
             	let array=response; 
-            	console.log(response);
+            	//console.log(response);
                 for(let a=0;a<array.length;a++)
                 {
                 	let adiv=create_airport_div(array[a]);
-                	console.log(adiv);
+                	//console.log(adiv);
                     airportList.append(adiv);
                     
                 }
@@ -302,7 +302,7 @@ var build_airlines_interface = function() {
     $('body').on('click', '#submit_btn', function () {
         let departt=$(this).parent().find('.depart_time').val();
         let departp=$(this).parent().find('.depart_place').val();
-        console.log(departp);
+        //console.log(departp);
         let arrivep=$(this).parent().find('.arrive_place').val();
         //add a depart date picker and change the flight searcher to a instance finder 
         //just say that the depart date is current day
@@ -312,12 +312,12 @@ var build_airlines_interface = function() {
                     type: 'GET',
                      xhrFields: {withCredentials: true},
                     success: (response) => {
-                        let depart = false;
-                        let did; let aid;
-                        let arrive = false;
+                        var depart = false;
+                        var did; var aid;
+                        var arrive = false;
                         let airarray=response;
-                        for(let i=0;i<airarray.length;i++){
-                            let aircity=airarray[i].city;
+                        for(i=0;i<airarray.length;i++){
+                            var aircity=airarray[i].city;
                             if(aircity.localeCompare(departp)==0){
                                 depart=true;
                                 did = airarray[i].id
@@ -338,36 +338,38 @@ var build_airlines_interface = function() {
                                 xhrFields: {withCredentials: true},
                                 success:(response)=>{
                                     let farray=response;
-                                    for(let f=0; f<farray.length;f++){
+                                    for(f=0; f<farray.length;f++){
                                         //console.log("flight array loop");
-                                        let fid = farray[f].id;
-                                        let fdid = farray[f].departure_id;
-                                        let faid = farray[f].arrival_id;
+                                        var fid = farray[f].id;
+                                        var fdid = farray[f].departure_id;
+                                        var faid = farray[f].arrival_id;
                                         if (fdid==did && faid==aid){
-                                            let pid = farray[f].plane_id;
+                                            var pid = farray[f].plane_id;
                                             $.ajax(root_url+"instances?filter[flight_id]=" + encodeURIComponent(fid),{
                                                 type: 'GET',
                                                 xhrFields:{withCredentials:true},
                                                 success:(response)=>{
-                                                    let inarray = response;
-                                                    var today = new Date(); let dd = today.getDate(); let mm = today.getMonth()+1; let yyyy = today.getFullYear();
+                                                    var inarray = response;
+                                                    var today = new Date(); var dd = today.getDate(); var mm = today.getMonth()+1; var yyyy = today.getFullYear();
                                                     if(dd<10){
                                                             dd = "0"+dd;
                                                         }
                                                         if(mm<10){
                                                             mm="0"+mm;
                                                         }
-                                                        let fulldate = yyyy + "-" + mm + "-" + dd;
+                                                        var fulldate = yyyy + "-" + mm + "-" + dd;
                                                     for(i=0; i<inarray.length;i++){
                                                         //let fin = inarray[i].flight_id;
-                                                        let din = inarray[i].date;
-                                                        let info = inarray[i].info;
+                                                        var din = inarray[i].date;
+                                                        var info = inarray[i].info;
                                                     
                                                         //console.log(fin + " " + fid);
                                                        
                                                             if (fulldate.localeCompare(din)==0){
                                                                 if(!testifinstanceisfull(fid, inarray[i].id, fulldate, info)){
-                                                                	console.log("about to call createticket");
+                                                                    console.log("creating ticket for today's instance")
+                                                                	//console.log("about to call createticket");
+                                                                    //console.log("inarrayid"+inarray[i]);
                                                                     createticket(inarray[i].id,pid,fid, info,fulldate);
                                                                     return;
                                                                  } /*else {
@@ -388,15 +390,16 @@ var build_airlines_interface = function() {
                                                     
                                                 }
                                                 //check if the next day has an instance and loop that test until there are no more flights
-                                                            //let instanceid = findnewinstance(dd, mm, yyyy, fid);
-                                                            console.log(findnewinstance(dd, mm, yyyy, fid));
-                                                            console.log(dd+" "+mm+" "+yyyy+" "+fid);
+                                                            console.log("looking for next open instance");
+                                                            var instanceid = findnewinstance(dd, mm, yyyy, fid);
+                                                            //console.log("AA"+findnewinstance(dd, mm, yyyy, fid));
+                                                            //console.log(dd+" "+mm+" "+yyyy+" "+fid);
 //Undefined right here!!                                                
 //findnewinstance & getinstanceinfo & getinstancedate all return undefined because of the return values, so I can't tell if the logic works!!            
-                                                            console.log("B= "+instanceid);  
-                                                            let instanceinfo = getinstanceinfo(instanceid);
-                                                            let date = getinstancedate(instanceid);
-                                                            console.log("D"+instanceinfo);
+                                                            //console.log("B= "+instanceid);  
+                                                            var instanceinfo = getinstanceinfo(instanceid);
+                                                            var date = getinstancedate(instanceid);
+                                                            //console.log("D"+instanceinfo);
                                                             createticket(instanceid,pid,fid,instanceinfo,date);
                                                             return;
                                                 }
@@ -424,42 +427,47 @@ var build_airlines_interface = function() {
 
     });
 
+    var id;
     function createnewinstance(date, flightid){  //date is undefined!!!!!!!!!!!!
-        let id;
-console.log("flightid= "+flightid);
-console.log("date= "+date);             
+        console.log("creating new instance for date");
+       //var id=0;
+//console.log("flightid= "+flightid);
+//console.log("date= "+date);             
         $.ajax(root_url+"instances",{
             type: 'POST',
             xhrFields:{withCredentials:true},
             data:{
                 instance:{
                     flight_id: flightid,
-                    date:date
-                    //info:"0"
+                    date:date,
+                    info:"0"
                 }
             },
             success:(response)=>{
                 //*******************************
-                console.log(response);
+                //console.log(response);
                 id=response.id; 
+                console.log("responseid="+id);
+                return id;
             }
 
         });
-        console.log("id= "+id);
-        return id;//getnewinstance(date,flightid);
+        //console.log("id= "+id);
+        //return id;//getnewinstance(date,flightid);
             
 
         
     };
 
     function getnewinstance(date,flightid){
+        console.log("getting id of new instance");
         $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(flightid),{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
                 let instancearray = response;
                 for(i=0;i<instancearray.length;i++){
-                    console.log(instancearray.length);
+                   // console.log(instancearray.length);
                   
                     if (date.localeCompare(instancearray[i].date)==0){
                         //console.log("id"+instancearray[i].id)
@@ -471,6 +479,7 @@ console.log("date= "+date);
     };
 
     function getinstanceinfo(instanceid){
+        console.log("getting info of new instance");
         //do a filter thing
         var nose=true;
         $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
@@ -479,16 +488,17 @@ console.log("date= "+date);
             success:(response)=>{
                 let array = response;
                 for(i = 0;i<array.length;i++){
-                     nose=array[i].info;console.log("E"+nose);
+                     nose=array[i].info;//console.log("E"+nose);
                     return nose;
                 }
             }
         });
-        console.log("P"+nose);
+       // console.log("P"+nose);
         return nose;
     };
 
     function getinstancedate(instanceid){
+        console.log("getting date of new instance");
         var nr;
         $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
             type:'GET',
@@ -496,7 +506,7 @@ console.log("date= "+date);
             success:(response)=>{
                 let array = response;
                 for (i=0;i<array.length;i++){
-                    console.log(array[i].date);
+                    //console.log(array[i].date);
                      nr= array[i].date;
                     return nr;
                 }
@@ -506,14 +516,17 @@ console.log("date= "+date);
     };
 
  function findnewinstance(dd, mm, yyyy, fid){
-    let newdate;
-    var nr;
+    console.log("finding new instance");
+    var newdate=0;
+    var prevdate=0;
+    var nr=0;
             $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(fid),{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
                 let instancearray = response;
                 for(i=0; i<instancearray.length; i++){
+                    prevdate=newdate;
                     dd++;
                     if (mm==12 && dd==32){
                         mm=1;
@@ -521,84 +534,87 @@ console.log("date= "+date);
                         yyyy++;
                     }
                     if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
-                     mm++;
-                     dd=1;
-                     if (mm<10){
-                        mm="0"+mm;
-                    }
+                        mm++;
+                        dd=1;
+                        if (mm<10){
+                            mm="0"+mm;
+                        }
                      } else if (mm==2 && dd==29){
-                     mm++;
-                     dd=1;
-                     if (mm<10){
-                        mm="0"+mm;
-                    }
+                        mm++;
+                        dd=1;
+                        if (mm<10){
+                            mm="0"+mm;
+                        }
                      } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
                         mm++;
                         dd=1;
                         if (mm<10){
-                        mm="0"+mm;
-                    }
+                            mm="0"+mm;
+                        }
                     }
                     if (dd<10){
                         dd="0"+dd;
                     }
 
-                   let newdate = yyyy + "-" + mm + "-" + dd;
-                   console.log('new date ');
-                   console.log(newdate);
-                   let instancedate = instancearray[i].date;
-                   console.log("instance date=");
-                   console.log(instancedate);
-                   console.log(response);
-                    console.log("A= "+instancearray[i].info);
+                   newdate = yyyy + "-" + mm + "-" + dd;
+                   //console.log('new date'+newdate);
+                   var instancedate = instancearray[i].date;
+                   //console.log("instance date="+instancedate);
+                   //console.log(response);
+                    //console.log("A= "+instancearray[i].info);
                     
                     //if(instancedate.localeCompare(newdate)==0){
-                    	if(instancearray[i].info==null)
+                    	/*if(instancearray[i].info==null)
                     	{
                     		instancearray[i].info="open";
-                    	}
-                    	let test = instancearray[i].info;
+                    	}*/
+                    	var test = instancearray[i].info;
+                        //console.log("test="+test);
                         if(!test.localeCompare("full")==0/*!testifinstanceisfull(instancearray[i].flight_id,instancedate,instancearray[i].info)*/){
                            /* return findnewinstance(dd,mm,yyyy,fid);
                         } else {*/
-                            console.log("nr= "+instancearray[i].id)
+                            //console.log("nr= "+instancearray[i].id)
+                            console.log("found new instance!");
                             nr = instancearray[i].id;
                             return nr;
-                        } else{
+                        } /*else{
                            // return false;
                            break; 
-                        }
+                        }*/
                     } /*else {
                         console.log("D");
                         return findnewinstance(dd, mm, yyyy, fid);
                     }*/
                // }
-                console.log('hree');
-                console.log(newdate);
-               return createnewinstance(newdate, fid);
+                //console.log('hree');
+               // console.log("new"+dd);
+                console.log("did not find new instace, creating");
+               return createnewinstance(prevdate, fid);
             }
         });
    
             return nr;
-            console.log("DDDD");
+            //console.log("DDDD");
 };
 
 
 function testifinstanceisfull(flightid, instanceid, date, info){
-   let returntext=false;
-    console.log(info);
+    console.log("testing if instance is full");
+   var returntext=false;
+    //console.log(info);
     if(info==null){
     	info="open";
     }
     if (info.localeCompare("full")==0){
         returntext=true;
     } else {
-        let seatcount = parseInt(info,10);
+        var seatcount = parseInt(info,10);
         //seatcount++;
-        let newinfo;
+        var newinfo;
         //THIS IS HOW WE SET HOW MANY PEOPLE CAN BE ON EACH PLANE
         if(seatcount==2){
             returntext=true;
+            console.log("instance should be defined as full");
         
         $.ajax(root_url+"instances/"+encodeURIComponent(instanceid),{
             type:'PUT',
@@ -617,6 +633,8 @@ function testifinstanceisfull(flightid, instanceid, date, info){
 };
 
 function createticket(instanceid, planeid, flightid,info,date){
+    console.log("createtickedid="+instanceid);
+    console.log("Creating ticket");
 
         let fnamet=$('<p class="fnamet">Enter your first name:</p>');
         let fname=$('<input type="text" class="fname"></input>');
@@ -645,11 +663,11 @@ function createticket(instanceid, planeid, flightid,info,date){
             let g=$(this).parent().find('.gender').val();
             let a=$(this).parent().find('.age').val();
 
-            let seatcount = parseInt(info,10);
+            var seatcount = parseInt(info,10);
             //how to get instance's info
             seatcount++;
-            let newinfo = ""+ seatcount;
-            console.log("in= "+instanceid);
+            var newinfo = ""+ seatcount;
+           // console.log("in= "+instanceid);
             $.ajax(root_url+"instances/" + encodeURIComponent(instanceid),{
                 type:'PUT',
                 xhrFields:{withCredentials:true},
@@ -671,7 +689,7 @@ function createticket(instanceid, planeid, flightid,info,date){
 
                     let seatarray=response;
                     for(i=0;i<seatarray.length;i++){
-                        console.log(seatarray[i].id);
+                        //console.log(seatarray[i].id);
                         seatid = seatarray[i].id;
 
                        // if(seatarray[i].plane_id==planeid){
@@ -689,18 +707,18 @@ function createticket(instanceid, planeid, flightid,info,date){
                                     }
                                 },
                                 success:(response)=>{
-                                	console.log("ticket ");
-                                	console.log(response);
+                                	//console.log("ticket ");
+                                	//console.log(response);
                                 	let ticket_btn=$('<button id="ticket_btn">See Ticket</button>');
                                 	body.append(ticket_btn);
 
                                 	$('body').on('click', '#ticket_btn', function () {   //we can either clear screen or put at bttom
-            							console.log("print ticket");
+            							//console.log("print ticket");
             							let ticket_div=$('<div class="ticket_div"><div>');
             							let firstn=fn;//response.first_name;
             							let lastn=ln;//response.last_name;
             							let full_name=firstn+" "+lastn;
-            							console.log(full_name);
+            							//console.log(full_name);
             							//not really sure why not showing up 
             							let perinfo=g+", "+a+" years old";//response.gender+", "+response.age+" years old");
             							let seat_info="Seat "+seatid+", id";//"Seat "+response.seat_id+", id");
