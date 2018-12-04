@@ -241,15 +241,16 @@ var build_airlines_interface = function() {
 
     });
 
-    /*$('body').on('click', '#search_btn', function () {
-        //console.log("browse destination");
+    //browse destination page
+    $('body').on('click', '#search_btn', function () {
+        console.log("browse destination");
         let body=$('body');
         body.empty();
         let home_btn=$('<button id="home_btn">Home Page</button>');
         body.append(home_btn);
         let stitle=$('<h1 class="btitle">Search for a Destination!</h1>');
         body.append(stitle);
-        let stext=$('<p class="stext">put something here</p>');
+        let stext=$('<p class="stext">Not sure where to go? Search for a city or airport to see if we have flights going there. Also, we know you hate arriving somewhere with the wrong clothes. That is why if you click on an airport, you can see the current weather in that city so you are prepared!</p>');
         body.append(stext);
 
 
@@ -265,30 +266,30 @@ var build_airlines_interface = function() {
         });
         
 
-		let airportList =  $('<div class="airportlist"></div>');
-		body.append(airportList);      
+        let airportList =  $('<div class="airportlist"></div>');
+        body.append(airportList);      
         $.ajax(root_url+"airports",{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
-            	let array=response; 
-            	//console.log(response);
+                let array=response; 
+                console.log(response);
                 for(let a=0;a<array.length;a++)
                 {
-                	let adiv=create_airport_div(array[a]);
-                	//console.log(adiv);
-                    airportList.append(adiv);
-                    
+                    let adiv=create_airport_div(array[a]);
+                    console.log(adiv);
+                    airportList.append(adiv);   
                 }
-
-
             }
         });
 
+        $('body').on("click", '.airportName', function() {
+            console.log("it comes here");
+            //somehow add api 
+        });
 
 
-
-    });*/
+    });  
 
     let create_airport_div=(airport)=>{
     	let adiv = $('<div class = "airport" id = '+airport.id+'></div>');
@@ -809,7 +810,7 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy){
             							let ticket_div=$('<div class="ticket_div"><div>');
             							let firstn=fn;//response.first_name;
             							let lastn=ln;//response.last_name;
-            							let full_name=firstn+" "+lastn;
+            							let full_name=firstn+" "+lastn+" ";
             							//console.log(full_name);
             							//not really sure why not showing up 
             							let perinfo=g+", "+a+" years old";//response.gender+", "+response.age+" years old");
