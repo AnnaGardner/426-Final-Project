@@ -241,7 +241,7 @@ var build_airlines_interface = function() {
 
     });
 
-    $('body').on('click', '#search_btn', function () {
+    /*$('body').on('click', '#search_btn', function () {
         //console.log("browse destination");
         let body=$('body');
         body.empty();
@@ -288,7 +288,7 @@ var build_airlines_interface = function() {
 
 
 
-    });
+    });*/
 
     let create_airport_div=(airport)=>{
     	let adiv = $('<div class = "airport" id = '+airport.id+'></div>');
@@ -370,7 +370,7 @@ var build_airlines_interface = function() {
                                                                     console.log("creating ticket for today's instance")
                                                                 	//console.log("about to call createticket");
                                                                     //console.log("inarrayid"+inarray[i]);
-                                                                    createticket(inarray[i].id,pid,fid, info,fulldate);
+                                                                    createticket(inarray[i].id,pid,fid, info,dd,mm,yyyy);
                                                                     return;
                                                                  } /*else {
                                                                         let instanceid = findnewinstance(dd,mm,yyyy,fid);
@@ -390,18 +390,22 @@ var build_airlines_interface = function() {
                                                     
                                                 }
                                                 //check if the next day has an instance and loop that test until there are no more flights
-                                                            console.log("looking for next open instance");
+                                                           /* console.log("looking for next open instance");
                                                             var instanceid = findnewinstance(dd, mm, yyyy, fid);
+                                                           // var instance = instanceid.success(data=>data.id);
                                                             //console.log("AA"+findnewinstance(dd, mm, yyyy, fid));
                                                             //console.log(dd+" "+mm+" "+yyyy+" "+fid);
 //Undefined right here!!                                                
 //findnewinstance & getinstanceinfo & getinstancedate all return undefined because of the return values, so I can't tell if the logic works!!            
                                                             //console.log("B= "+instanceid);  
                                                             var instanceinfo = getinstanceinfo(instanceid);
+                                                           //var instanceinfo = instanceid.success(data=>data.info);
                                                             var date = getinstancedate(instanceid);
-                                                            //console.log("D"+instanceinfo);
+                                                           //var date = instanceid.success(data=>data.date);
+                                                            console.log("inst");
+                                                            console.log(instanceid);
                                                             createticket(instanceid,pid,fid,instanceinfo,date);
-                                                            return;
+                                                            return;*/
                                                 }
                                             })
                                             
@@ -429,6 +433,7 @@ var build_airlines_interface = function() {
 
     var id;
     function createnewinstance(date, flightid){  //date is undefined!!!!!!!!!!!!
+        console.log(date);
         console.log("creating new instance for date");
        //var id=0;
 //console.log("flightid= "+flightid);
@@ -448,7 +453,8 @@ var build_airlines_interface = function() {
                 //console.log(response);
                 id=response.id; 
                 console.log("responseid="+id);
-                return id;
+                returnf(id);
+                //return id;
             }
 
         });
@@ -458,6 +464,10 @@ var build_airlines_interface = function() {
 
         
     };
+
+    function returnf(thing){
+        return thing;
+    }
 
     function getnewinstance(date,flightid){
         console.log("getting id of new instance");
@@ -482,19 +492,20 @@ var build_airlines_interface = function() {
         console.log("getting info of new instance");
         //do a filter thing
         var nose=true;
-        $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
+       $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
                 let array = response;
                 for(i = 0;i<array.length;i++){
                      nose=array[i].info;//console.log("E"+nose);
-                    return nose;
+                    returnf(nose);
+                    //return nose;
                 }
             }
         });
        // console.log("P"+nose);
-        return nose;
+        //return nose;
     };
 
     function getinstancedate(instanceid){
@@ -508,7 +519,7 @@ var build_airlines_interface = function() {
                 for (i=0;i<array.length;i++){
                     //console.log(array[i].date);
                      nr= array[i].date;
-                    return nr;
+                    returnf(nr);
                 }
             }
         });
@@ -576,7 +587,7 @@ var build_airlines_interface = function() {
                             //console.log("nr= "+instancearray[i].id)
                             console.log("found new instance!");
                             nr = instancearray[i].id;
-                            return nr;
+                            returnf(nr);
                         } /*else{
                            // return false;
                            break; 
@@ -589,11 +600,11 @@ var build_airlines_interface = function() {
                 //console.log('hree');
                // console.log("new"+dd);
                 console.log("did not find new instace, creating");
+                console.log(prevdate);
                return createnewinstance(prevdate, fid);
             }
         });
-   
-            return nr;
+            //return nr;
             //console.log("DDDD");
 };
 
@@ -616,7 +627,7 @@ function testifinstanceisfull(flightid, instanceid, date, info){
             returntext=true;
             console.log("instance should be defined as full");
         
-        $.ajax(root_url+"instances/"+encodeURIComponent(instanceid),{
+       $.ajax(root_url+"instances/"+encodeURIComponent(instanceid),{
             type:'PUT',
             xhrFields:{withCredentials:true},
             data:{
@@ -632,7 +643,7 @@ function testifinstanceisfull(flightid, instanceid, date, info){
     return returntext;
 };
 
-function createticket(instanceid, planeid, flightid,info,date){
+function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy){
     console.log("createtickedid="+instanceid);
     console.log("Creating ticket");
 
@@ -667,7 +678,64 @@ function createticket(instanceid, planeid, flightid,info,date){
             //how to get instance's info
             seatcount++;
             var newinfo = ""+ seatcount;
+            if(newinfo.localeCompare("2")||seatcount==2){
+                console.log("RRRR");
+                newinfo = "full";
+                dd++;
+                    if (mm==12 && dd==32){
+                        mm=1;
+                        dd=1;
+                        yyyy++;
+                    }
+                    if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
+                        mm++;
+                        dd=1;
+                        if (mm<10){
+                            mm="0"+mm;
+                        }
+                     } else if (mm==2 && dd==29){
+                        mm++;
+                        dd=1;
+                        if (mm<10){
+                            mm="0"+mm;
+                        }
+                     } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
+                        mm++;
+                        dd=1;
+                        if (mm<10){
+                            mm="0"+mm;
+                        }
+                    }
+                    if (dd<10){
+                        dd="0"+dd;
+                    }
+
+                   newdate = yyyy + "-" + mm + "-" + dd;
+
+             $.ajax(root_url+"instances",{
+            type: 'POST',
+            xhrFields:{withCredentials:true},
+            data:{
+                instance:{
+                    flight_id: flightid,
+                    date:newdate,
+                    info:"0"
+                }
+            },
+            success:(response)=>{
+                //*******************************
+                //console.log(response);
+               /* id=response.id; 
+                console.log("responseid="+id);
+                returnf(id);*/
+                //return id;
+            }
+
+        });
+            }
            // console.log("in= "+instanceid);
+
+           var date = yyyy+"-"+mm+"-"+dd;
             $.ajax(root_url+"instances/" + encodeURIComponent(instanceid),{
                 type:'PUT',
                 xhrFields:{withCredentials:true},
@@ -678,7 +746,10 @@ function createticket(instanceid, planeid, flightid,info,date){
                     info:newinfo
                 }
             }
-            })
+            });
+
+           
+
 
 
             $.ajax(root_url+"seats?filter[plane_id]="+encodeURIComponent(planeid),{
