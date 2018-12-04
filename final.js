@@ -672,6 +672,7 @@ function createticket(instanceid, planeid, flightid,info,date){
                     let seatarray=response;
                     for(i=0;i<seatarray.length;i++){
                         console.log(seatarray[i].id);
+                        seatid = seatarray[i].id;
 
                        // if(seatarray[i].plane_id==planeid){
                             $.ajax(root_url+"tickets",{
@@ -683,7 +684,7 @@ function createticket(instanceid, planeid, flightid,info,date){
                                         last_name:ln,
                                         age:a,
                                         gender:g,
-                                        seat_id:seatarray[i].id,
+                                        seat_id:seatid,
                                         instance_id: instanceid
                                     }
                                 },
@@ -696,13 +697,13 @@ function createticket(instanceid, planeid, flightid,info,date){
                                 	$('body').on('click', '#ticket_btn', function () {   //we can either clear screen or put at bttom
             							console.log("print ticket");
             							let ticket_div=$('<div class="ticket_div"><div>');
-            							let firstn=response.first_name;
-            							let lastn=response.last_name;
-            							let full_name=$(firstn+" "+lastn);
+            							let firstn=fn;//response.first_name;
+            							let lastn=ln;//response.last_name;
+            							let full_name=firstn+" "+lastn;
             							console.log(full_name);
             							//not really sure why not showing up 
-            							let perinfo=$(response.gender+", "+response.age+" years old");
-            							let seat_info=$("Seat "+response.seat_id+", id");
+            							let perinfo=g+", "+a+" years old";//response.gender+", "+response.age+" years old");
+            							let seat_info="Seat "+seatid+", id";//"Seat "+response.seat_id+", id");
             							ticket_div.append(full_name);
             							ticket_div.append(perinfo);
             							ticket_div.append(seat_info);
