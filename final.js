@@ -347,12 +347,24 @@ var build_airlines_interface = function() {
                             }
 
                         }
+                        var doesflightexist=false;
+                         $.ajax(root_url+"flights",{
+                                type: 'GET',
+                                xhrFields: {withCredentials: true},
+                                success:(response)=>{
+                                let farray=response;
+                                for(f=0;f<farray.length;f++){
+                                    console.log(farray[f].info);
+                                    var fdid = farray[f].departure_id;
+                                    var faid = farray[f].arrival_id;
+                                    if (fdid==did && faid==aid){
+                                        doesflightexist=true;
+                                    }
+                                }
 
-                        //add a thing that creates a new flight and a new instance based on what they've typed if they say something new
-                        //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
-
-
-                            /*$.ajax(root_url+"flights",{
+                                if(!doesflightexist){
+                                   
+                                 $.ajax(root_url+"flights",{
                                 type:'POST',
                                 xhrFields:{withCredentials:true},
                                 data:{
@@ -381,9 +393,13 @@ var build_airlines_interface = function() {
                                     });
                                 }
                             });
-                        }*/
+                                }
+                            }
+                        });
+                        //add a thing that creates a new flight and a new instance based on what they've typed if they say something new
+                        //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
 
-                        if(depart&&arrive){
+                        if(depart&&arrive||!(depart&&arrive)){
                             $.ajax(root_url+"flights",{
                                 type: 'GET',
                                 xhrFields: {withCredentials: true},
