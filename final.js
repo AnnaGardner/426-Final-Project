@@ -352,7 +352,7 @@ var build_airlines_interface = function() {
                         //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
 
 
-                            $.ajax(root_url+"flights",{
+                            /*$.ajax(root_url+"flights",{
                                 type:'POST',
                                 xhrFields:{withCredentials:true},
                                 data:{
@@ -381,7 +381,7 @@ var build_airlines_interface = function() {
                                     });
                                 }
                             });
-                        }
+                        }*/
 
                         if(depart&&arrive){
                             $.ajax(root_url+"flights",{
