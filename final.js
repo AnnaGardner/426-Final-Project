@@ -349,7 +349,7 @@ var build_airlines_interface = function() {
                             break;
                         }
 
-                    }
+                    }//for
                     console.log(did + "B" + aid);
                     if(!(depart&&arrive)){
                         //error catch if airports don't exist
@@ -404,16 +404,16 @@ var build_airlines_interface = function() {
                                                         }
                                                     },success:(response)=>{
                                                         checkifflight(newflightid,fulldate, fulldate,departp, arrivep, departt, response.id, pid, response.info, dd, mm,yyyy,response.date);
-                                                    }
-                                                });
-                                            }
-                                        });
-                                    }
-                                }
-                            })
+                                                    }//success
+                                                });//root_url+instances
+                                            }//success
+                                        });//root_url+flights
+                                    }//for
+                                }//success
+                            });//planes
                            
-                        }
-                    }
+                        }//doesflightexist
+                    }//success
                 });//flights ajax
                         //add a thing that creates a new flight and a new instance based on what they've typed if they say something new
                         //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
@@ -446,55 +446,55 @@ var build_airlines_interface = function() {
                                                     var din = inarray[i].date;
                                                     var info = inarray[i].info;
                                                     if(!testifinstanceisfull(fid, inarray[i].id, din, info)){
-                                                                  console.log("creating ticket for today's instance")
-                                                                    var instance = inarray[i].id;
-                                                                    checkifflight(fid,fulldate, orgdate,departp, arrivep, departt, instance, pid, info, dd, mm,yyyy,din);
-                                                                    return;
-                                                                 } else {
-                                                                     dd++;
-                                                                        if (mm==12 && dd==32){
-                                                                            mm=1;
-                                                                               dd=1;
-                                                                                    yyyy++;
-                                                                                }
-                                                                                if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
-                                                                                    mm++;
-                                                                                    dd=1;
-                                                                                    if (mm<10){
-                                                                                        mm="0"+mm;
-                                                                                    }
-                                                                                 } else if (mm==2 && dd==29){
-                                                                                    mm++;
-                                                                                    dd=1;
-                                                                                    if (mm<10){
-                                                                                        mm="0"+mm;
-                                                                                    }
-                                                                                 } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
-                                                                                    mm++;
-                                                                                    dd=1;
-                                                                                    if (mm<10){
-                                                                                        mm="0"+mm;
-                                                                                    }
-                                                                                }
-                                                                                if (dd<10){
-                                                                                    dd="0"+dd;
-                                                                                }
-
-                                                                               fulldate = yyyy + "-" + mm + "-" + dd;
-                                                                               console.log("fulldate"+fulldate);
+                                                        console.log("creating ticket for today's instance")
+                                                        var instance = inarray[i].id;
+                                                        checkifflight(fid,fulldate, orgdate,departp, arrivep, departt, instance, pid, info, dd, mm,yyyy,din);
+                                                        return;
+                                                    } else {
+                                                        dd++;
+                                                        if (mm==12 && dd==32){
+                                                            mm="0"+1;
+                                                            dd=1;
+                                                            yyyy++;
                                                         }
-                                                    }//for loop
-                                                        
-                                    
-                                }
-                            });//instance filter
-                        }//if fdid=did
+                                                        if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
+                                                            mm++;
+                                                            dd=1;
+                                                            if (mm<10){
+                                                                mm="0"+mm;
+                                                            }
+                                                        } else if (mm==2 && dd==29){
+                                                            mm++;
+                                                            dd=1;
+                                                            if (mm<10){
+                                                            mm="0"+mm;
+                                                        }
+                                                    } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
+                                                        mm++;
+                                                        dd=1;
+                                                        if (mm<10){
+                                                            mm="0"+mm;
+                                                        }
+                                                    }
+                                                    if (dd<10){
+                                                        dd="0"+dd;
+                                                    }
 
-                    }
-                }});}});
-                });//airport ajax
-
-    });//submit button
+                                                    fulldate = yyyy + "-" + mm + "-" + dd;
+                                                    console.log("fulldate"+fulldate);
+                                                }//else
+                                            }//for loop
+                                        }//success
+                                    });//instance filter
+                                }//if fdid=did
+                            }//farray
+                        }//success
+                    });//flights
+                }//depar
+            }//airports succes
+        });//air
+    });//function
+            
 
     function checkifflight(flightid,date,tdate,dp,ar,ti,instance,pid,info,dd,mm,yyyy,din){
        $.ajax(root_url+"flights?filter[id]="+encodeURIComponent(flightid),{
