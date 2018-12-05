@@ -207,6 +207,8 @@ var build_airlines_interface = function() {
     $('body').on('click', '#book_btn', function () {
         book();
     });
+
+    let response_div = $('<div id="response_div"></div>');
      
         function book(){
         //console.log("book");
@@ -216,26 +218,32 @@ var build_airlines_interface = function() {
         body.append(home_btn);
         let btitle=$('<h1 class="btitle">Book a Flight!</h1>');
         body.append(btitle);
+
+        let book_div = $('<div id="book"></div>');
         let btext=$('<p class="btext">Yay! You know where you want to go! Simply follow the instructions to input your information and book your flight!</p>');
-        body.append(btext);
+        book_div.append(btext);
 
         let dptext=$('<p class="dptext">Enter a departure location:</p>');
-        body.append(dptext);
+        book_div.append(dptext);
         let depart_place=$('<input type="text" class="depart_place"></input>');
         dptext.append(depart_place);
 
-        let dttext=$('<p class="dttext">Enter a departure time:</p>');
-        body.append(dttext);
-        let depart_time=$('<input type="text" class="depart_time"></input>');
+        let dttext=$('<p class="dttext">Enter a departure time (on the hour):</p>');
+        book_div.append(dttext);
+        let depart_time=$('<input type="number" class="depart_time"></input>');
         dttext.append(depart_time);
 
         let attext=$('<p class="attext">Enter an arrival location:</p>');
-        body.append(attext);
+        book_div.append(attext);
         let arrive_place=$('<input type="text" class="arrive_place"></input>');
         attext.append(arrive_place);
 
         let submit_btn=$('<button id="submit_btn">Submit Information</button>');
-        body.append(submit_btn);
+        book_div.append(submit_btn);
+        body.append(book_div);
+
+        //let response_div = $('<div id="response"><div>');
+        body.append(response_div);
 
     };
 
@@ -305,8 +313,17 @@ var build_airlines_interface = function() {
 
 
     $('body').on('click', '#submit_btn', function () {
+        response_div.empty();
         let departt=$(this).parent().find('.depart_time').val();
-        //let hour = 
+        //let hour = parseInt(departt.substring(1,2),10);
+        //console.log("AAa"+hour);
+        departt= parseInt(departt,10);
+        let hourstring;
+        if(departt<10){
+            hourstring = "2000-01-01T0"+departt+":00:00.000Z";
+        } else{
+        hourstring = "2000-01-01T"+departt+":00:00.000Z";
+    }
         let departp=$(this).parent().find('.depart_place').val();
         //console.log(departp);
         let arrivep=$(this).parent().find('.arrive_place').val();
@@ -350,10 +367,21 @@ var build_airlines_interface = function() {
                         }
 
                     }//for
-                    console.log(did + "B" + aid);
+
                     if(!(depart&&arrive)){
+                        airporterror(departp,arrivep);
                         //error catch if airports don't exist
                     }
+                    console.log(did + "B" + aid);
+                    
+                    if(!depart){
+                        airporterror(departp);
+                    }
+                    if(!arrive){
+                        airporterror(null,arrivep);
+                    }
+
+
                     var doesflightexist=false;
                     $.ajax(root_url+"flights",{
                         type: 'GET',
@@ -364,9 +392,13 @@ var build_airlines_interface = function() {
                                 //console.log(farray[f].info);
                                 var fdid = farray[f].departure_id;
                                 var faid = farray[f].arrival_id;
-                                if (fdid==did && faid==aid){
+                                var time = farray[f].departs_at;
+                                console.log("time"+time);
+                                console.log("hour"+hourstring);
+                                if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
                                     doesflightexist=true;
                                     console.log("BB");
+                                    f=farray.length++;
                                 }
                             }
 
@@ -382,8 +414,8 @@ var build_airlines_interface = function() {
                                             xhrFields:{withCredentials:true},
                                             data:{
                                                 flight:{
-                                                    departs_at:12,
-                                                    arrives_at:2,
+                                                    departs_at:departt,
+                                                    arrives_at:departt+2,
                                                     number:1,
                                                     departure_id: did,
                                                     arrival_id:aid,
@@ -403,7 +435,13 @@ var build_airlines_interface = function() {
                                                             info: "0"
                                                         }
                                                     },success:(response)=>{
-                                                        checkifflight(newflightid,fulldate, fulldate,departp, arrivep, departt, response.id, pid, response.info, dd, mm,yyyy,response.date);
+                                                        var found=false;
+                                                        if(!found){
+                                                            console.log("AO");
+                                                            checkifflight(newflightid,fulldate, fulldate,departp, arrivep, departt, response.id, pid, response.info, dd, mm,yyyy,response.date);
+                                                            found=true;
+                                                        }
+                                                        return;
                                                     }//success
                                                 });//root_url+instances
                                             }//success
@@ -412,13 +450,9 @@ var build_airlines_interface = function() {
                                 }//success
                             });//planes
                            
-                        }//doesflightexist
-                    }//success
-                });//flights ajax
-                        //add a thing that creates a new flight and a new instance based on what they've typed if they say something new
-                        //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
+                        } else {
 
-                if(depart&&arrive||!(depart&&arrive)){
+                    if(depart&&arrive/*!(depart&&arrive)*/){
                     console.log("EE");
                     $.ajax(root_url+"flights",{
                         type: 'GET',
@@ -440,17 +474,26 @@ var build_airlines_interface = function() {
                                             xhrFields:{withCredentials:true},
                                             success:(response)=>{
                                                 var inarray = response;
+                                                inarray = inarray.sort(function(a,b){
+                                                    return a.id-b.id;
+                                                });
                                                 console.log(inarray.length);
-                                                for(i=0; i<inarray.length;i++){
-                                                    console.log("EEE");
-                                                    var din = inarray[i].date;
-                                                    var info = inarray[i].info;
-                                                    if(!testifinstanceisfull(fid, inarray[i].id, din, info)){
+                                                var found = false;
+                                                for(u=0; u<inarray.length;u++){
+                                                    console.log(inarray);
+                                                    var din = inarray[u].date;
+                                                    var info = inarray[u].info;
+                                                    console.log(u);
+                                                    console.log("anti"+inarray[u].id);
+                                                    if(!found&&!testifinstanceisfull(fid, inarray[u].id, din, info)){
                                                         console.log("creating ticket for today's instance")
-                                                        var instance = inarray[i].id;
-                                                        checkifflight(fid,fulldate, orgdate,departp, arrivep, departt, instance, pid, info, dd, mm,yyyy,din);
-                                                        return;
+                                                        var instance = inarray[u].id;
+                                                        checkifflight(fid,din, orgdate,departp, arrivep, departt, instance, pid, info, dd, mm,yyyy,din);
+                                                       found=true; console.log("Y"+u);
+                                                       u=inarray.length+1;
+                                                       console.log("I"+u);
                                                     } else {
+                                                        console.log("getting new date");
                                                         dd++;
                                                         if (mm==12 && dd==32){
                                                             mm="0"+1;
@@ -487,10 +530,18 @@ var build_airlines_interface = function() {
                                         }//success
                                     });//instance filter
                                 }//if fdid=did
+                                f=farray.length+1;
                             }//farray
                         }//success
                     });//flights
                 }//depar
+                        }//doesflightexist
+                    }//success
+                });//flights ajax
+                        //add a thing that creates a new flight and a new instance based on what they've typed if they say something new
+                        //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
+
+                
             }//airports succes
         });//air
     });//function
@@ -512,8 +563,8 @@ var build_airlines_interface = function() {
                         text = "Regretably, your intial choice of flight is not available. We can offer you a flight from " + dp + " to " + ar + " at " + ti + " on "+date;
                     }
                 }
-                body.append(text);
-                    body.append('<p>To book your ticket, click yes. If you would like to search for another flight, click no.');
+                response_div.append(text);
+                    response_div.append('<p>To book your ticket, click yes. If you would like to search for another flight, click no.');
                     let yes_btn=$('<button id="yes_btn">Correct flight</button>');
                     body.append(yes_btn);
                     let no_btn=$('<button id="no_btn">No</button>');
@@ -562,6 +613,26 @@ var build_airlines_interface = function() {
             
 
         
+    };
+
+    function airporterror(error1, error2){
+        //var error_div = $('<div id=error_div></div>');
+
+        if(error1&&error2){
+            response_div.append("<p>Apologies, we do not have airports in either of those cities. Please click empty to try again.");
+        } else if(error1!=null){
+            response_div.append("<p>Apologies, but as of right now we do not have an airport in " + error1 +". Please click empty to try again.");
+        } else if (error2){
+            response_div.append("<p>Apologies, but as of right now we do not have an airport in " + error2 +". Please click empty to try again.");
+        }
+        response_div.append('<button id="ticket_btn">Empty</button>');
+        //body.append(error_div);
+
+        $('body').on('click', '#persubmit_btn', function () {
+            alert("$");
+            response_div.empty();
+            book();
+        });
     };
 
     function returnf(thing){
@@ -715,8 +786,12 @@ function testifinstanceisfull(flightid, instanceid, date, info){
     if(info==null){
         info="open";
     }
+
+    console.log("info"+info);
+    console.log("inst"+instanceid);
     if (info.localeCompare("full")==0){
         returntext=true;
+        console.log("instanceisfull");
     } else {
         var seatcount = parseInt(info,10);
         //seatcount++;
@@ -726,19 +801,19 @@ function testifinstanceisfull(flightid, instanceid, date, info){
             returntext=true;
             console.log("instance should be defined as full");
         
-       $.ajax(root_url+"instances/"+encodeURIComponent(instanceid),{
-            type:'PUT',
-            xhrFields:{withCredentials:true},
-            data:{
-                instance:{
-                flight_id: flightid,
-                date:date,
-                info:"full"
-            }
+            $.ajax(root_url+"instances/"+encodeURIComponent(instanceid),{
+                type:'PUT',
+                xhrFields:{withCredentials:true},
+                data:{
+                    instance:{
+                        flight_id: flightid,
+                        date:date,
+                        info:"full"
+                    }
+                }
+            });
         }
-        });
     }
-}
     return returntext;
 };
 
