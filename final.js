@@ -301,7 +301,7 @@ var build_airlines_interface = function() {
             console.log("it comes here");
             //somehow add api 
             var weather_root="https://api.openweathermap.org/data/2.5/weather?";
-            var api_key="&APPID=a93370ac9b8eced5bac889dff05e31f3";
+            var api_key="&APPID=a93370ac9b8eced5bac889dff05e31f3&units=imperial";
             let i=$(this).attr('id');
 
             let c=$(this).find('.airportName').html();         //think we need ids 
@@ -319,7 +319,7 @@ var build_airlines_interface = function() {
                     let temp=response.main.temp; //could put a picture for different temp ranges 
                     let cname=response.name; 
                     console.log(temp);
-                    $('body').append('The current temperature in '+cname+' is '+temp+'F');
+                    $('body').append('The current temperature in '+cname+' is '+temp+'F'+'<br>');
                    //$('body').append(temp);
 
                 }
