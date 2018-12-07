@@ -302,8 +302,12 @@ var build_airlines_interface = function() {
             //somehow add api 
             var weather_root="https://api.openweathermap.org/data/2.5/weather?";
             var api_key="&APPID=a93370ac9b8eced5bac889dff05e31f3";
+
+            let c=$('.airportName').html();
+            c=c.substring(c.lastIndexOf(",")+1);
+            console.log(c);
             //where do I put the key?????
-            $.ajax(weather_root+"q=asheville"+api_key,{  //need to make it not specific to asheville
+            $.ajax(weather_root+"q= "+c+api_key,{  //need to make it not specific to asheville
                 
            // $.ajax(weather_root+"q= "+arrive_place+api_key,{    //is arrive_place the correct thing?? 
                 type: 'GET',
@@ -315,7 +319,6 @@ var build_airlines_interface = function() {
                     let cname=response.name; 
                     console.log(temp);
                     $('body').append('The current temperature in '+cname+' is '+temp+'F');
-                    alert('The current temperature in '+cname+' is '+temp+'F');
                    //$('body').append(temp);
 
                 }
