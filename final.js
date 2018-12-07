@@ -300,7 +300,26 @@ var build_airlines_interface = function() {
         $('body').on("click", '.airportName', function() {
             console.log("it comes here");
             //somehow add api 
+            var weather_root="https://api.openweathermap.org/data/2.5/weather?";
+            var api_key="&APPID=a93370ac9b8eced5bac889dff05e31f3";
+            //where do I put the key?????
+            $.ajax(weather_root+"q=asheville"+api_key,{
+                
+            //$.ajax(weather_root+"q= "+arrive_place+api_key,{    //is arrive_place the correct thing?? 
+                type: 'GET',
+                xhrFields:{withCredentials:true},
+                success:(response)=>{
+                    console.log("yay it worked");
+                }
+
+            });
+
+            //when calling url say root?q=London&APPID=a93370ac9b8eced5bac889dff05e31f3
+
+
         });
+
+
 
 
     });  
