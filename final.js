@@ -826,7 +826,7 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
             var testa = parseInt(a,10);
             console.log("atest"+a);
             console.log("test"+testa);
-            if(testa.isNaN()){
+            if(isNaN(testa)){
                 response_div.append('<p>Age is invalid');
             } else {
 
