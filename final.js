@@ -297,24 +297,25 @@ var build_airlines_interface = function() {
             }
         });
 
-        $('body').on("click", '.airportName', function() {
+        $('body').on("click", '.airport', function() {
             console.log("it comes here");
             //somehow add api 
             var weather_root="https://api.openweathermap.org/data/2.5/weather?";
             var api_key="&APPID=a93370ac9b8eced5bac889dff05e31f3";
+            let i=$(this).attr('id');
 
-            let c=$('.airportName').html();
+            let c=$(this).find('.airportName').html();         //think we need ids 
             c=c.substring(c.lastIndexOf(",")+1);
             console.log(c);
             //where do I put the key?????
-            $.ajax(weather_root+"q= "+c+api_key,{  //need to make it not specific to asheville
+            $.ajax(weather_root+"q= "+c+api_key,{  
                 
            // $.ajax(weather_root+"q= "+arrive_place+api_key,{    //is arrive_place the correct thing?? 
                 type: 'GET',
                // xhrFields:{withCredentials:true},
                 success:(response)=>{
-                    console.log("yay it worked");
-                    console.log(response);
+                    console.log("weather");
+                    console.log(response);  //temp is in kelvin!
                     let temp=response.main.temp; //could put a picture for different temp ranges 
                     let cname=response.name; 
                     console.log(temp);
