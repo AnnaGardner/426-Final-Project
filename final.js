@@ -228,9 +228,11 @@ var build_airlines_interface = function() {
         let depart_place=$('<input type="text" class="depart_place"></input>');
         dptext.append(depart_place);
 
-        let dttext=$('<p class="dttext">Enter a departure time (on the hour):</p>');
+        let dttext=$('<p class="dttext">Enter a departure time:</p>');
         book_div.append(dttext);
-        let depart_time=$('<input type="number" class="depart_time"></input>');
+        let depart_time = $('<input type="time" class="depart_time"></input>');
+
+        //let depart_time=$('<input type="number" class="depart_time"></input>');
         dttext.append(depart_time);
 
         let attext=$('<p class="attext">Enter an arrival location:</p>');
@@ -317,13 +319,48 @@ var build_airlines_interface = function() {
         let departt=$(this).parent().find('.depart_time').val();
         //let hour = parseInt(departt.substring(1,2),10);
         //console.log("AAa"+hour);
-        departt= parseInt(departt,10);
-        let hourstring;
-        if(departt<10){
-            hourstring = "2000-01-01T0"+departt+":00:00.000Z";
-        } else{
-        hourstring = "2000-01-01T"+departt+":00:00.000Z";
-    }
+        //departt= parseInt(departt,10);
+        console.log(departt);
+        var hourstring;
+        if(departt.includes(":")){
+            console.log("E");
+            var newdepartt=departt.split("");
+            var hour=""; var min="";
+            for(d=0;d<newdepartt.length;d++){
+                if (d<2){
+                    hour=hour+newdepartt[d];
+                } else {
+                    let dtest = ""+newdepartt[d];
+                    if(!dtest.localeCompare(":")==0){
+                    min=min+newdepartt[d];
+                }
+                }
+            }
+            console.log("hour"+hour);
+            console.log("min"+min);
+            var fulltime = "";
+            //var newmin = parseInt(min,10);
+            //console.log("newmin"+newmin);
+            if(min>53){
+                hour = parseInt(hour,10)+1+":00";
+            } else if(min>44||min>38){
+                min=":45";
+            } else if(min>29||min>22){
+                min=":30";
+            } else if(min>14||min>8){
+                min=":15";
+            } else if (min>=0){
+                min=":00";
+            }
+            fulltime = hour+min;
+            hourstring="2000-01-01T"+fulltime+":00.000Z";
+        } else {
+            fulltime=departt;
+            hour=departt;
+            min="00";
+            hourstring = "2000-01-01T"+departt+":00:00.000Z";
+        }
+
         let departp=$(this).parent().find('.depart_place').val();
         //console.log(departp);
         let arrivep=$(this).parent().find('.arrive_place').val();
@@ -393,13 +430,17 @@ var build_airlines_interface = function() {
                                 var fdid = farray[f].departure_id;
                                 var faid = farray[f].arrival_id;
                                 var time = farray[f].departs_at;
-                                console.log("time"+time);
-                                console.log("hour"+hourstring);
                                 if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
                                     doesflightexist=true;
                                     console.log("BB");
                                     f=farray.length++;
-                                }
+                                } /*else {
+                                    if(fdid==did&&faid==aid&&time.includes(hour)){
+                                        if(nexthourflight()){
+                                            doesflightexist=true;
+                                        }
+                                    }
+                                }*/
                             }
 
                             if(!doesflightexist){
@@ -414,8 +455,8 @@ var build_airlines_interface = function() {
                                             xhrFields:{withCredentials:true},
                                             data:{
                                                 flight:{
-                                                    departs_at:departt,
-                                                    arrives_at:departt+2,
+                                                    departs_at:fulltime,
+                                                    arrives_at:fulltime,
                                                     number:1,
                                                     departure_id: did,
                                                     arrival_id:aid,
@@ -438,7 +479,7 @@ var build_airlines_interface = function() {
                                                         var found=false;
                                                         if(!found){
                                                             console.log("AO");
-                                                            checkifflight(newflightid,fulldate, fulldate,departp, arrivep, departt, response.id, pid, response.info, dd, mm,yyyy,response.date);
+                                                            checkifflight(newflightid,fulldate, fulldate,departp, arrivep, fulltime, response.id, pid, response.info, dd, mm,yyyy,response.date);
                                                             found=true;
                                                         }
                                                         return;
@@ -464,8 +505,9 @@ var build_airlines_interface = function() {
                                     var fid = farray[f].id;
                                     var fdid = farray[f].departure_id;
                                     var faid = farray[f].arrival_id;
+                                    var time = farray[f].time;
                                     console.log(fdid + " a " +faid);
-                                    if (fdid==did && faid==aid){
+                                    if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
                                         console.log("PP");
                                         var pid = farray[f].plane_id;
                                         console.log(fid);
@@ -488,7 +530,7 @@ var build_airlines_interface = function() {
                                                     if(!found&&!testifinstanceisfull(fid, inarray[u].id, din, info)){
                                                         console.log("creating ticket for today's instance")
                                                         var instance = inarray[u].id;
-                                                        checkifflight(fid,din, orgdate,departp, arrivep, departt, instance, pid, info, dd, mm,yyyy,din);
+                                                        checkifflight(fid,din, orgdate,departp, arrivep, fulltime, instance, pid, info, dd, mm,yyyy,din);
                                                        found=true; console.log("Y"+u);
                                                        u=inarray.length+1;
                                                        console.log("I"+u);
