@@ -321,7 +321,7 @@ var build_airlines_interface = function() {
         //console.log("AAa"+hour);
         //departt= parseInt(departt,10);
         console.log(departt);
-        var hourstring;
+        var hourstring="";
         if(departt.includes(":")){
             console.log("E");
             var newdepartt=departt.split("");
@@ -425,25 +425,62 @@ var build_airlines_interface = function() {
                         xhrFields: {withCredentials: true},
                         success:(response)=>{
                             let farray=response;
+                            var testmin = 0;
+                            var newtime = ""; var nfhs=""; var flhour = ""; var flmin = "";
+
                             for(f=0;f<farray.length;f++){
                                 //console.log(farray[f].info);
                                 var fdid = farray[f].departure_id;
                                 var faid = farray[f].arrival_id;
                                 var time = farray[f].departs_at;
+                                
                                 if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
                                     doesflightexist=true;
                                     console.log("BB");
                                     f=farray.length++;
-                                } /*else {
-                                    if(fdid==did&&faid==aid&&time.includes(hour)){
-                                        if(nexthourflight()){
-                                            doesflightexist=true;
+                                } else {
+                                    var teststring = time.split("");
+                                        for(i=10;i<16;i++){
+                                            nfhs=nfhs+teststring[i];
+                                            if(i<13){
+                                                flhour = flhour+teststring[i];
+                                            } else if (i>13){
+                                                flmin = flmin+teststring[i];
+                                            }
                                         }
+                                    if(fdid==did&&faid==aid&&flhour.localeCompare(hour)==0){
+                                        console.log("0099");
+                                        var newtest=0;
+                                        
+                                        flhour = parseInt(flhour,10); flmin=parseInt(flmin,10); subhour=parseInt(subhour,10); submin=parseInt(submin,10);
+                                        if(flmin>submin){
+                                            newtest = flmin-submin;
+                                        } else if(flmin<submin){
+                                            newtest = submin-flmin;
+                                        }
+
+                                        if(newtest<testmin){
+                                            testmin=newtest;
+                                            newtime = nfhs;
+                                            hourstring = time;
+                                        }
+
+                                        /*if(nexthourflight(time, hour,min)){
+                                            doesflightexist=true;
+                                        }*/
                                     }
-                                }*/
+                                }
                             }
 
-                            if(!doesflightexist){
+                           /* if(!doesflightexist){
+                                var response = nexthourflight(newtime);
+                                /*if(response){
+                                    console.log("T");
+                                    doesflightexist=true;
+                                };*/
+                            //};
+
+                            if(!doesflightexist/*&&!response*/){
                                 $.ajax(root_url+"planes",{
                                     type:'GET',
                                     xhrFields:{withCredentials:true},
@@ -505,8 +542,10 @@ var build_airlines_interface = function() {
                                     var fid = farray[f].id;
                                     var fdid = farray[f].departure_id;
                                     var faid = farray[f].arrival_id;
-                                    var time = farray[f].time;
+                                    var time = farray[f].departs_at;
                                     console.log(fdid + " a " +faid);
+                                    console.log("time"+time);
+                                    console.log("hour"+hourstring);
                                     if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
                                         console.log("PP");
                                         var pid = farray[f].plane_id;
@@ -572,7 +611,7 @@ var build_airlines_interface = function() {
                                         }//success
                                     });//instance filter
                                 }//if fdid=did
-                                f=farray.length+1;
+                                //f=farray.length+1;
                             }//farray
                         }//success
                     });//flights
@@ -590,6 +629,7 @@ var build_airlines_interface = function() {
             
 
     function checkifflight(flightid,date,tdate,dp,ar,ti,instance,pid,info,dd,mm,yyyy,din){
+        response_div.empty();
        $.ajax(root_url+"flights?filter[id]="+encodeURIComponent(flightid),{
             type:'GET',
             xhrFields:{withCredentials:true},
@@ -608,19 +648,36 @@ var build_airlines_interface = function() {
                 response_div.append(text);
                     response_div.append('<p>To book your ticket, click yes. If you would like to search for another flight, click no.');
                     let yes_btn=$('<button id="yes_btn">Correct flight</button>');
-                    body.append(yes_btn);
+                    response_div.append(yes_btn);
                     let no_btn=$('<button id="no_btn">No</button>');
-                    body.append(no_btn);
-                    $('body').on('click', '#yes_btn', function () {
+                    response_div.append(no_btn);
+                    $('#response_div').on('click', '#yes_btn', function () {
                         createticket(instance,pid,flightid, info,dd,mm,yyyy,din);
                     });
 
-                    $('body').on('click','#no_btn',function(){
+                    $('response_div').on('click','#no_btn',function(){
                         book();
                     });
             }
         });
         
+    };
+
+    function nexthourflight(newtime){
+        console.log("TTTT");
+       response_div.append("<p>Is this time - " + newtime + " - suitable for your flight, or would you prefer your original request?</p>");
+       response_div.append("<button id = 'timeyes_btn'>Yes</button>");
+       response_div.append("<button id='timeno_btn'No</button>");
+       var response = false;
+       $('body').on('click', '#timeyes_btn', function(){
+        console.log("YYYYY");
+        response= true;
+       });
+       $('body').on('click','#timeno_btn',function(){
+        console.log("NNNNNN");
+        response = false;
+       });
+       return response;
     };
 
     var id;
@@ -677,150 +734,6 @@ var build_airlines_interface = function() {
         });
     };
 
-    function returnf(thing){
-        return thing;
-    }
-
-    function getnewinstance(date,flightid){
-        console.log("getting id of new instance");
-        $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(flightid),{
-            type:'GET',
-            xhrFields:{withCredentials:true},
-            success:(response)=>{
-                let instancearray = response;
-                for(i=0;i<instancearray.length;i++){
-                   // console.log(instancearray.length);
-                  
-                    if (date.localeCompare(instancearray[i].date)==0){
-                        //console.log("id"+instancearray[i].id)
-                        return instancearray[i].id;
-                    }
-                }
-            }
-        });
-    };
-
-    function getinstanceinfo(instanceid){
-        console.log("getting info of new instance");
-        //do a filter thing
-        var nose=true;
-       $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
-            type:'GET',
-            xhrFields:{withCredentials:true},
-            success:(response)=>{
-                let array = response;
-                for(i = 0;i<array.length;i++){
-                     nose=array[i].info;//console.log("E"+nose);
-                    returnf(nose);
-                    //return nose;
-                }
-            }
-        });
-       // console.log("P"+nose);
-        //return nose;
-    };
-
-    function getinstancedate(instanceid){
-        console.log("getting date of new instance");
-        var nr;
-        $.ajax(root_url+"instances?filter[id]="+encodeURIComponent(instanceid),{
-            type:'GET',
-            xhrFields:{withCredentials:true},
-            success:(response)=>{
-                let array = response;
-                for (i=0;i<array.length;i++){
-                    //console.log(array[i].date);
-                     nr= array[i].date;
-                    returnf(nr);
-                }
-            }
-        });
-        return nr;
-    };
-
- function findnewinstance(dd, mm, yyyy, fid){
-    console.log("finding new instance");
-    var newdate=0;
-    var prevdate=0;
-    var nr=0;
-            $.ajax(root_url+"instances?filter[flight_id]="+encodeURIComponent(fid),{
-            type:'GET',
-            xhrFields:{withCredentials:true},
-            success:(response)=>{
-                let instancearray = response;
-                for(i=0; i<instancearray.length; i++){
-                    prevdate=newdate;
-                    dd++;
-                    if (mm==12 && dd==32){
-                        mm=1;
-                        dd=1;
-                        yyyy++;
-                    }
-                    if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
-                        mm++;
-                        dd=1;
-                        if (mm<10){
-                            mm="0"+mm;
-                        }
-                     } else if (mm==2 && dd==29){
-                        mm++;
-                        dd=1;
-                        if (mm<10){
-                            mm="0"+mm;
-                        }
-                     } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
-                        mm++;
-                        dd=1;
-                        if (mm<10){
-                            mm="0"+mm;
-                        }
-                    }
-                    if (dd<10){
-                        dd="0"+dd;
-                    }
-
-                   newdate = yyyy + "-" + mm + "-" + dd;
-                   //console.log('new date'+newdate);
-                   var instancedate = instancearray[i].date;
-                   //console.log("instance date="+instancedate);
-                   //console.log(response);
-                    //console.log("A= "+instancearray[i].info);
-                    
-                    //if(instancedate.localeCompare(newdate)==0){
-                        /*if(instancearray[i].info==null)
-                        {
-                            instancearray[i].info="open";
-                        }*/
-                        var test = instancearray[i].info;
-                        //console.log("test="+test);
-                        if(!test.localeCompare("full")==0/*!testifinstanceisfull(instancearray[i].flight_id,instancedate,instancearray[i].info)*/){
-                           /* return findnewinstance(dd,mm,yyyy,fid);
-                        } else {*/
-                            //console.log("nr= "+instancearray[i].id)
-                            console.log("found new instance!");
-                            nr = instancearray[i].id;
-                            returnf(nr);
-                        } /*else{
-                           // return false;
-                           break; 
-                        }*/
-                    } /*else {
-                        console.log("D");
-                        return findnewinstance(dd, mm, yyyy, fid);
-                    }*/
-               // }
-                //console.log('hree');
-               // console.log("new"+dd);
-                console.log("did not find new instace, creating");
-                console.log(prevdate);
-               return createnewinstance(prevdate, fid);
-            }
-        });
-            //return nr;
-            //console.log("DDDD");
-};
-
-
 function testifinstanceisfull(flightid, instanceid, date, info){
     console.log("testing if instance is full");
    var returntext=false;
@@ -860,6 +773,7 @@ function testifinstanceisfull(flightid, instanceid, date, info){
 };
 
 function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
+    response_div.empty();
     console.log("createtickedid="+instanceid);
     console.log("Creating ticket");
     var newdate;
@@ -890,6 +804,12 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
             let ln=$(this).parent().find('.lname').val();
             let g=$(this).parent().find('.gender').val();
             let a=$(this).parent().find('.age').val();
+            var testa = parseInt(a,10);
+            console.log("atest"+a);
+            console.log("test"+testa);
+            if(testa.isNaN()){
+                response_div.append('<p>Age is invalid');
+            } else {
 
             var seatcount = parseInt(info,10);
             //how to get instance's info
@@ -1028,7 +948,7 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
 
 
 
-
+}
         });
             
     };
