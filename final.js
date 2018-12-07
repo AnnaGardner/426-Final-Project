@@ -264,7 +264,7 @@ var build_airlines_interface = function() {
         body.append(home_btn);
         let stitle=$('<h1 class="btitle">Search for a Destination!</h1>');
         body.append(stitle);
-        let stext=$('<p class="stext">Not sure where to go? Search for a city or airport to see if we have flights going there. Also, we know you hate arriving somewhere with the wrong clothes. That is why if you click on an airport, you can see the current weather in that city so you are prepared!</p>');
+        let stext=$('<p class="stext">Not sure where to go? Search for a city or airport to see if we have flights going there. Also, we know you hate arriving somewhere with the wrong clothes. That is why if you click on an airport, you can see the current weather in that city so you can come prepared!</p>');
         body.append(stext);
 
 
@@ -307,7 +307,7 @@ var build_airlines_interface = function() {
                 
             //$.ajax(weather_root+"q= "+arrive_place+api_key,{    //is arrive_place the correct thing?? 
                 type: 'GET',
-                xhrFields:{withCredentials:true},
+               // xhrFields:{withCredentials:true},
                 success:(response)=>{
                     console.log("yay it worked");
                 }
@@ -665,7 +665,7 @@ var build_airlines_interface = function() {
                     }
                 }
                 response_div.append(text);
-                    response_div.append('<p>To book your ticket, click yes. If you would like to search for another flight, click no.');
+                    response_div.append('<p>To book your ticket, click correct flight. If you would like to search for another flight, click no.');
                     let yes_btn=$('<button id="yes_btn">Correct flight</button>');
                     response_div.append(yes_btn);
                     let no_btn=$('<button id="no_btn">No</button>');
