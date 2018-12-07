@@ -1,6 +1,7 @@
-body{
+/*body{
     background-image: url(sky-background-3890.jpeg);
 }
+*/
 h1{
     color: black;   
 }
@@ -8,15 +9,13 @@ h1{
     background-color:rgb(84, 153, 196, .6);
     text-align: center;
 }
-    
-}
 #pass{
-    background-color: #b3e6ff;
+    background-color: #ccebff;
     border-radius: 10px;
     
 }
 #user{
-    background-color:#b3e6ff;
+    background-color:#ccebff;
     border-radius: 10px;
 }
 .login{
@@ -25,7 +24,7 @@ h1{
     
 }
 #login_btn{
-    background-color: #b3e6ff;
+    background-color: #ccebff;
     border:darkgrey;
     color: black;
     padding: 5px;
@@ -34,6 +33,36 @@ h1{
     border-radius: 10px;
     text-decoration: none;
     margin-top: 8px;
+}
+#home_btn{
+    background-color: #ccebff;
+    border:darkgrey;
+    color: black;
+    padding: 5px;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 10px;
+    text-decoration: none;
+    margin-top: 8px;
+}
+.btitle{
+    font-family: 'Lora', serif;
+    font-size: 3vw;
+    padding-top: 3vh;
+    text-align: center;
+    
+}
+.stext{
+    font-family: 'Lora', serif;
+    font-size: 1em;
+    padding-top: 3vh;
+    text-align: justify;
+}
+.airport{
+     border: thin solid black;
+    padding: 3vh;
+    background-color: #ccebff;
+    
 }
 .text{
     color: black;

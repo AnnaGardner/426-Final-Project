@@ -1,0 +1,17 @@
+<!doctype html>
+<html data-brackets-id="1">
+<head data-brackets-id="2">
+    <title data-brackets-id="3">Final Project API Example</title>
+    <script data-brackets-id="4" src="http://www.cs.unc.edu/~kmp/comp426fall18/jquery-3.3.1.js"></script>
+    <script data-brackets-id="5" src="final.js"></script>
+    <link data-brackets-id="6" rel="stylesheet" type="text/css" href="final.css">
+  </head>
+
+
+  <body data-brackets-id="7">
+  <button id="home_btn">Home Page</button>
+  <h1 class="btitle">Search for a Destination!</h1><p class="stext">Not sure where to go? Search for a city or airport to see if we have flights going there. Also, we know you hate arriving somewhere with the wrong clothes. That is why if you click on an airport, you can see the current weather in that city so you are prepared!</p>
+  <input class="myInput" type="text" placeholder="Search for a city..." '="">
+  <div class="airportlist">
+  <div class="airport" id="130600">
+    <div class="airportName">RDU, Raleigh</div></div><div class="airport" id="104802"><div class="airportName">asheville, asheville</div></div><div class="airport" id="104803"><div class="airportName">b, b</div></div><div class="airport" id="130601"><div class="airportName">West Houston Airport, Houston </div></div></div></body></html>
