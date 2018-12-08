@@ -306,22 +306,21 @@ var build_airlines_interface = function() {
             console.log("it comes here");
             //somehow add api 
             var weather_root="https://api.openweathermap.org/data/2.5/weather?";
-            var api_key="&APPID=a93370ac9b8eced5bac889dff05e31f3&units=imperial";
+            var api_key="&APPID=a93370ac9b8eced5bac889dff05e31f3&units=imperial";  //units makes it F
             let i=$(this).attr('id');
 
-            let c=$(this).find('.airportName').html();         //think we need ids 
+            let c=$(this).find('.airportName').html();          
             c=c.substring(c.lastIndexOf(",")+1);
             console.log(c);
             //where do I put the key?????
             $.ajax(weather_root+"q= "+c+api_key,{  
-                
-           // $.ajax(weather_root+"q= "+arrive_place+api_key,{    //is arrive_place the correct thing?? 
+                 
                 type: 'GET',
                // xhrFields:{withCredentials:true},
                 success:(response)=>{
-                    let airport = c;
+                    let airport = c.substring(1);
                     console.log("weather");
-                    console.log(response);  //temp is in kelvin!
+                    console.log(response);  
                     let temp=response.main.temp; //could put a picture for different temp ranges 
                     let cname=response.name; 
                     console.log(temp);
@@ -348,15 +347,17 @@ var build_airlines_interface = function() {
                             success: (response) => {
                                 let airportid = response;
                                 console.log(response);
-                                console.log("length"+airportid.length);
+                                console.log("length "+airportid.length);
                                 for (ai=0;ai<airportid.length;ai++){
-                                    console.log(airport+"test"+airportid[ai].city);
+                                    console.log(airport+" test "+airportid[ai].city);
                                     console.log(airport.localeCompare(airportid[ai].city)==0);
                                     //don't know why this is testing negative, will keep looking
+                                    //because airport has a space in it 
                                     if(airport.toLowerCase().localeCompare(airportid[ai].city.toLowerCase())==0){
                                         ai=airportid.length+1;
+                                        console.log("airportid"+airportid[ai]);
                                         let id = airportid[ai].id;
-                                         console.log("airportid"+id);
+                                         
                                         let arriveloc = cname;
                                         let departptest = $(this).parent().find('.depart_place');
                                         let departp=$(this).parent().find('.depart_place').val();
@@ -845,8 +846,7 @@ var build_airlines_interface = function() {
     };
 
     var id;
-    function createnewinstance(date, flightid){  //date is undefined!!!!!!!!!!!!
-        console.log(date);
+    function createnewinstance(date, flightid){  
         console.log("creating new instance for date");
        //var id=0;
 //console.log("flightid= "+flightid);
@@ -862,24 +862,18 @@ var build_airlines_interface = function() {
                 }
             },
             success:(response)=>{
-                //*******************************
-                //console.log(response);
                 id=response.id; 
                 console.log("responseid="+id);
                 returnf(id);
-                //return id;
             }
 
         });
-        //console.log("id= "+id);
-        //return id;//getnewinstance(date,flightid);
             
 
         
     };
 
     function airporterror(error1, error2){
-        //var error_div = $('<div id=error_div></div>');
 
         if(error1&&error2){
             response_div.append("<p>Apologies, we do not have airports in either of those cities. Please click empty to try again.");
@@ -889,7 +883,7 @@ var build_airlines_interface = function() {
             response_div.append("<p>Apologies, but as of right now we do not have an airport in " + error2 +". Please click empty to try again.");
         }
         response_div.append('<button id="ticket_btn">Empty</button>');
-        //body.append(error_div);
+        
 
         $('body').on('click', '#persubmit_btn', function () {
             alert("$");
