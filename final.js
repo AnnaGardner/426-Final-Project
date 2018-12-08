@@ -915,7 +915,7 @@ function testifinstanceisfull(flightid, instanceid, date, info){
         //seatcount++;
         var newinfo;
         //THIS IS HOW WE SET HOW MANY PEOPLE CAN BE ON EACH PLANE
-        if(seatcount==2){
+        if(seatcount==20){
             returntext=true;
             console.log("instance should be defined as full");
         
