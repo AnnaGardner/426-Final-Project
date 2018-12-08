@@ -479,22 +479,27 @@ var build_airlines_interface = function() {
             } else if (min>=0){
                 min=":00";
             }
-            fulltime = hour+min;
+            //fulltime = hour+min;
             if(hour>=12){
                 hour=hour-12;
             }
-            hourstring="2000-01-01T"+fulltime+":00.000Z";
             fulltime = hour+min;
-        } else {
-            fulltime=hour+":00";
+
             hourstring="2000-01-01T"+fulltime+":00.000Z";
+        } else {
+            if(hour>=12){
+                hour = hour-12;
+            }
+            
            // fulltime=departt;
             hour=departt;
             if(hour>=12){
                 hour=hour-12;
             }
             min="00";
-            fulltime = hour+":00";
+            fulltime=hour+":00";
+            hourstring="2000-01-01T"+fulltime+":00.000Z";
+            //fulltime = hour+":00";
             //hourstring = "2000-01-01T"+departt+":00:00.000Z";
         }
 
@@ -528,8 +533,9 @@ var build_airlines_interface = function() {
                         
 
                         var aircity=airarray[i].city;
-                        console.log(arrivep+"arrive"+aircity);
-                        if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0){
+                        var aircode = airarray[i].code;
+                        //console.log(arrivep+"arrive"+aircity);
+                        if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0||aircode.toLowerCase().localeCompare(departp.toLowerCase())==0){
                             depart=true;
                             departerror = false;
                             did = airarray[i].id;
@@ -541,7 +547,7 @@ var build_airlines_interface = function() {
                             arriveerror=false;
                             aid=arriveid;
                             firstcheck=true;
-                        } else if (aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
+                        } else if (aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0||aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
                             arrive=true;
                             arriveerror=false;
                             aid = airarray[i].id;
@@ -550,7 +556,7 @@ var build_airlines_interface = function() {
                               aid = airarray[i].id;
                             }*/
                         if(depart&&arrive){
-                            break;
+                            i=airarray.length+1;
                         }
 
                     }//for
@@ -593,6 +599,7 @@ var build_airlines_interface = function() {
                                 xhrFields: {withCredentials: true},
                                 success:(response)=>{
                                     let farray=response;
+                                    console.log("TTT");
                                     var testmin = 0;
                                     var newtime = ""; var nfhs=""; var flhour = ""; var flmin = "";
 
@@ -638,7 +645,7 @@ var build_airlines_interface = function() {
                                             }*/
                                                 }
                                             }
-                                        }
+                                        }//for
 
                            /* if(!doesflightexist){
                                 var response = nexthourflight(newtime);
@@ -715,6 +722,8 @@ var build_airlines_interface = function() {
                                                     if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
                                                     console.log("PP");
                                                         var pid = farray[f].plane_id;
+                                                        f=farray.length+1;
+
                                                         $.ajax(root_url+"instances?filter[flight_id]=" + encodeURIComponent(fid),{
                                                             type: 'GET',
                                                             xhrFields:{withCredentials:true},
@@ -729,7 +738,7 @@ var build_airlines_interface = function() {
                                                                     var info = inarray[u].info;
                                                                     if(!found&&!testifinstanceisfull(fid, inarray[u].id, din, info)){
                                                                         var instance = inarray[u].id;
-                                                                        checkifflight(did,aid,fid,din, orgdate,departp, arrivep, fulltime, instance, pid, info, dd, mm,yyyy,din);
+                                                                        checkifflight(fdid,faid,fid,din, orgdate,departp, arrivep, fulltime, instance, pid, info, dd, mm,yyyy,din);
                                                                         found=true;
                                                                         u=inarray.length+1;
                                                                     } else {
@@ -788,6 +797,7 @@ var build_airlines_interface = function() {
             
 
      function checkifflight(did,aid,flightid,date,tdate,dp,ar,ti,instance,pid,info,dd,mm,yyyy,din){
+        console.log("did"+did);console.log("aid"+aid);
         response_div.empty();
         console.log("check");
         $.ajax(root_url+"airports/"+encodeURIComponent(did),{
