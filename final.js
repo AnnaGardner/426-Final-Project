@@ -319,7 +319,7 @@ var build_airlines_interface = function() {
                 type: 'GET',
                // xhrFields:{withCredentials:true},
                 success:(response)=>{
-                    let airport = ""+c;
+                    let airport = c;
                     console.log("weather");
                     console.log(response);  //temp is in kelvin!
                     let temp=response.main.temp; //could put a picture for different temp ranges 
