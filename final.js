@@ -260,6 +260,8 @@ var build_airlines_interface = function() {
         console.log("browse destination");
         let body=$('body');
         body.empty();
+        body.append(response_div);
+        response_div.empty();
         let home_btn=$('<button id="home_btn">Home Page</button>');
         body.append(home_btn);
         let stitle=$('<h1 class="btitle">Search for a Destination!</h1>');
@@ -281,7 +283,9 @@ var build_airlines_interface = function() {
         
 
         let airportList =  $('<div class="airportlist"></div>');
-        body.append(airportList);      
+        body.append(airportList);   
+        let search_div = $('<div id=search_div></div>');
+        body.append(search_div);   
         $.ajax(root_url+"airports",{
             type:'GET',
             xhrFields:{withCredentials:true},
@@ -298,6 +302,7 @@ var build_airlines_interface = function() {
         });
 
         $('body').on("click", '.airport', function() {
+            search_div.empty();
             console.log("it comes here");
             //somehow add api 
             var weather_root="https://api.openweathermap.org/data/2.5/weather?";
@@ -314,14 +319,63 @@ var build_airlines_interface = function() {
                 type: 'GET',
                // xhrFields:{withCredentials:true},
                 success:(response)=>{
+                    let airport = ""+c;
                     console.log("weather");
                     console.log(response);  //temp is in kelvin!
                     let temp=response.main.temp; //could put a picture for different temp ranges 
                     let cname=response.name; 
                     console.log(temp);
-                    $('body').append('The current temperature in '+cname+' is '+temp+'F'+'<br>');
-                   //$('body').append(temp);
+                    search_div.append('The current temperature in '+cname+' is '+temp+'F'+'<br>');
+                     search_div.append("<p>Like the look of your choice? Simply enter your departure location and flight time and we'll find your flight for you!</p>");
+                    let dptext=$('<p class="dptext">Enter a departure location:</p>');
+                    search_div.append(dptext);
+                    let depart_place=$('<input type="text" class="depart_place"></input>');
+                    dptext.append(depart_place);
+                    let dttext=$('<p class="dttext">Enter a departure time:</p>');
+                    search_div.append(dttext);
+                    let depart_time = $('<input type="time" class="depart_time"></input>');
+                    dttext.append(depart_time);
+                    let weather_submit_btn=$('<button id="weather_submit_btn">Submit Information</button>');
+                    search_div.append(weather_submit_btn);
+                    var filter = "airports?filter[city]="+airport;
+                    $('body').on('click','#weather_submit_btn',function(){
+                        console.log("c"+c);
 
+                        $.ajax(root_url+"/airports",{
+                        //$.ajax(root_url+filter,{
+                            type:'GET',
+                            xhrFields:{withCredentials:true},
+                            success: (response) => {
+                                let airportid = response;
+                                console.log(response);
+                                console.log("length"+airportid.length);
+                                for (ai=0;ai<airportid.length;ai++){
+                                    console.log(airport+"test"+airportid[ai].city);
+                                    console.log(airport.localeCompare(airportid[ai].city)==0);
+                                    //don't know why this is testing negative, will keep looking
+                                    if(airport.toLowerCase().localeCompare(airportid[ai].city.toLowerCase())==0){
+                                        ai=airportid.length+1;
+                                        let id = airportid[ai].id;
+                                         console.log("airportid"+id);
+                                        let arriveloc = cname;
+                                        let departptest = $(this).parent().find('.depart_place');
+                                        let departp=$(this).parent().find('.depart_place').val();
+                                        let departttest = $(this).parent().find('.depart_time');
+                                        let departt=$(this).parent().find('.depart_time').val();
+                                        if (!departttest.val()&!departptest.val()){
+                                            response_div.append("<p>Please input your desired flight time and departure location.</p>");
+                                        } else if(!departptest.val()){
+                                            response_div.append("<p>Please input your desired departure location.</p>");
+                                        } else if(!departttest.val()){
+                                            response_div.append("<p>Please input your desired flight time.</p>");
+                                        } else {
+                                            flightcheck(departp, departt,arriveloc,true,id);
+                                        }
+                                    }
+                                }
+                            }
+                        });//airportfilter
+                    });//weather click
                 }
 
             });
@@ -332,13 +386,12 @@ var build_airlines_interface = function() {
         });
 
 
-
-
     });  
 
     let create_airport_div=(airport)=>{
         let adiv = $('<div class = "airport" id = '+airport.id+'></div>');
         let airportname = adiv.append('<div class = "airportName">'+airport.name+', '+airport.city+'</div>');
+        airportname.attr('id',airport.id);
         adiv.append(airportname);
         return adiv;
 
@@ -346,12 +399,13 @@ var build_airlines_interface = function() {
 
 
    $('body').on('click', '#submit_btn', function () {
-        response_div.empty();
+        let arriveptest = $(this).parent().find('.arrive_place');
+        let arrivep = $(this).parent().find('.arrive_place').val();
         let departptest = $(this).parent().find('.depart_place');
          let departp=$(this).parent().find('.depart_place').val();
         //console.log(departp);
-        let arriveptest = $(this).parent().find('.arrive_place');
-        let arrivep=$(this).parent().find('.arrive_place').val();
+        /*let arriveptest = $(this).parent().find('.arrive_place');
+        let arrivep=$(this).parent().find('.arrive_place').val();*/
 
         let departttest = $(this).parent().find('.depart_time');
         let departt=$(this).parent().find('.depart_time').val();
@@ -360,6 +414,7 @@ var build_airlines_interface = function() {
         //departt= parseInt(departt,10);
         //console.log("AAA"+departt);
         console.log(departp+"EE");
+        
         if (!departttest.val()&!departptest.val()&&!arriveptest.val()){
             response_div.append("<p>Please input your desired flight time, departure location, and arrival location. If you do not already know where'd you like to travel, we are happy to offer you our search feature to pick your next adventure!</p>");
             response_div.append(search_btn);
@@ -379,7 +434,14 @@ var build_airlines_interface = function() {
             response_div.append("<p>Please input your desired arrival location. If you do not already know where'd you like to travel, we are happy to offer you our search feature to pick your next adventure!</p>");
             response_div.append(search_btn);
         } else {
+        flightcheck(departp, departt,arrivep,false);
+    }
+   });
 
+   function flightcheck(departp, departt, arrivep,arrivefine,arriveid){
+    console.log("arriveid"+arriveid);
+        response_div.empty();
+        
         var hourstring="";
 
         if(departt.includes(":")){
@@ -394,12 +456,12 @@ var build_airlines_interface = function() {
                     if(!dtest.localeCompare(":")==0){
                     min=min+newdepartt[d];
                 }
-                }
             }
+        }//for
             console.log("hour"+hour);
             console.log("min"+min);
             var fulltime = "";
-            //var newmin = parseInt(min,10);
+                //var newmin = parseInt(min,10);
             //console.log("newmin"+newmin);
             if(min>53){
                 hour = parseInt(hour,10)+1
@@ -446,6 +508,7 @@ var build_airlines_interface = function() {
         }
         var fulldate = yyyy + "-" + mm + "-" + dd;
         var orgdate = fulldate;
+        var firstcheck=false;
             $.ajax(root_url+"airports/",{
                 type: 'GET',
                 xhrFields: {withCredentials: true},
@@ -455,7 +518,11 @@ var build_airlines_interface = function() {
                     var arrive = false;
                     let airarray=response;
                     var departerror=true;var arriveerror=true;
+                    console.log(response);
+
                     for(i=0;i<airarray.length;i++){
+                        console.log(arrivep+"arrive"+aircity);
+
                         var aircity=airarray[i].city;
                         if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0){
                             depart=true;
@@ -464,11 +531,17 @@ var build_airlines_interface = function() {
                         } /*else {
                           did = airarray[i].id;
                             }*/
-                        if (aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
+                        if(arrivefine==true&&!firstcheck){
+                            arrive=true;
+                            arriveerror=false;
+                            aid=arriveid;
+                            firstcheck=true;
+                        } else if (aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
                             arrive=true;
                             arriveerror=false;
                             aid = airarray[i].id;
-                        } /*else{
+                        }
+                     /*else{
                               aid = airarray[i].id;
                             }*/
                         if(depart&&arrive){
@@ -509,58 +582,58 @@ var build_airlines_interface = function() {
                     }*/
 
 
-                    var doesflightexist=false;
-                    $.ajax(root_url+"flights",{
-                        type: 'GET',
-                        xhrFields: {withCredentials: true},
-                        success:(response)=>{
-                            let farray=response;
-                            var testmin = 0;
-                            var newtime = ""; var nfhs=""; var flhour = ""; var flmin = "";
+                            var doesflightexist=false;
+                            $.ajax(root_url+"flights",{
+                                type: 'GET',
+                                xhrFields: {withCredentials: true},
+                                success:(response)=>{
+                                    let farray=response;
+                                    var testmin = 0;
+                                    var newtime = ""; var nfhs=""; var flhour = ""; var flmin = "";
 
-                            for(f=0;f<farray.length;f++){
-                                //console.log(farray[f].info);
-                                var fdid = farray[f].departure_id;
-                                var faid = farray[f].arrival_id;
-                                var time = farray[f].departs_at;
-                                
-                                if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
-                                    doesflightexist=true;
-                                    console.log("BB");
-                                    f=farray.length++;
-                                } else {
-                                    var teststring = time.split("");
-                                        for(i=10;i<16;i++){
-                                            nfhs=nfhs+teststring[i];
-                                            if(i<13){
-                                                flhour = flhour+teststring[i];
-                                            } else if (i>13){
-                                                flmin = flmin+teststring[i];
+                                    for(f=0;f<farray.length;f++){
+                                        //console.log(farray[f].info);
+                                        var fdid = farray[f].departure_id;
+                                        var faid = farray[f].arrival_id;
+                                        var time = farray[f].departs_at;
+                                        
+                                        if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
+                                            doesflightexist=true;
+                                            console.log("BB");
+                                            f=farray.length++;
+                                        } else {
+                                            var teststring = time.split("");
+                                                for(i=10;i<16;i++){
+                                                    nfhs=nfhs+teststring[i];
+                                                    if(i<13){
+                                                        flhour = flhour+teststring[i];
+                                                    } else if (i>13){
+                                                        flmin = flmin+teststring[i];
+                                                    }
+                                                }
+                                                if(fdid==did&&faid==aid&&flhour.localeCompare(hour)==0){
+                                                    console.log("0099");
+                                                    var newtest=0;
+                                                
+                                                    flhour = parseInt(flhour,10); flmin=parseInt(flmin,10); subhour=parseInt(subhour,10); submin=parseInt(submin,10);
+                                                    if(flmin>submin){
+                                                        newtest = flmin-submin;
+                                                    } else if(flmin<submin){
+                                                        newtest = submin-flmin;
+                                                    }
+
+                                                    if(newtest<testmin){
+                                                        testmin=newtest;
+                                                        newtime = nfhs;
+                                                        hourstring = time;
+                                                    }
+
+                                            /*if(nexthourflight(time, hour,min)){
+                                                doesflightexist=true;
+                                            }*/
+                                                }
                                             }
                                         }
-                                    if(fdid==did&&faid==aid&&flhour.localeCompare(hour)==0){
-                                        console.log("0099");
-                                        var newtest=0;
-                                        
-                                        flhour = parseInt(flhour,10); flmin=parseInt(flmin,10); subhour=parseInt(subhour,10); submin=parseInt(submin,10);
-                                        if(flmin>submin){
-                                            newtest = flmin-submin;
-                                        } else if(flmin<submin){
-                                            newtest = submin-flmin;
-                                        }
-
-                                        if(newtest<testmin){
-                                            testmin=newtest;
-                                            newtime = nfhs;
-                                            hourstring = time;
-                                        }
-
-                                        /*if(nexthourflight(time, hour,min)){
-                                            doesflightexist=true;
-                                        }*/
-                                    }
-                                }
-                            }
 
                            /* if(!doesflightexist){
                                 var response = nexthourflight(newtime);
@@ -570,144 +643,143 @@ var build_airlines_interface = function() {
                                 };*/
                             //};
 
-                            if(!doesflightexist/*&&!response*/){
-                                $.ajax(root_url+"planes",{
-                                    type:'GET',
-                                    xhrFields:{withCredentials:true},
-                                    success:(response)=>{
-                                    for(r=0;r<1;r++){
-                                        pid = response[r].id;
-                                        $.ajax(root_url+"flights",{
-                                            type:'POST',
+                                    if(!doesflightexist/*&&!response*/){
+                                        $.ajax(root_url+"planes",{
+                                            type:'GET',
                                             xhrFields:{withCredentials:true},
-                                            data:{
-                                                flight:{
-                                                    departs_at:fulltime,
-                                                    arrives_at:fulltime,
-                                                    number:1,
-                                                    departure_id: did,
-                                                    arrival_id:aid,
-                                                    plane_id: pid
-                                                }
-                                            },success:(response)=>{
-                                                newflightid = response.id;
-                                                depart=true;arrive=true;
-                                                console.log("A");
-                                                $.ajax(root_url+"instances",{
+                                            success:(response)=>{
+                                            for(r=0;r<1;r++){
+                                                pid = response[r].id;
+                                                console.log(aid+"aid");
+                                                $.ajax(root_url+"flights",{
                                                     type:'POST',
                                                     xhrFields:{withCredentials:true},
                                                     data:{
-                                                        instance:{
-                                                            flight_id:newflightid,
-                                                            date: fulldate,
-                                                            info: "0"
+                                                        flight:{
+                                                            departs_at:fulltime,
+                                                            arrives_at:fulltime,
+                                                            number:1,
+                                                            departure_id: did,
+                                                            arrival_id:aid,
+                                                            plane_id: pid
                                                         }
                                                     },success:(response)=>{
-                                                        var found=false;
-                                                        if(!found){
-                                                            console.log("AO");
-                                                            checkifflight(did,aid,newflightid,fulldate, fulldate,departp, arrivep, fulltime, response.id, pid, response.info, dd, mm,yyyy,response.date);
-                                                            found=true;
-                                                        }
-                                                        return;
+                                                        newflightid = response.id;
+                                                        depart=true;arrive=true;
+                                                        console.log("A");
+                                                        $.ajax(root_url+"instances",{
+                                                            type:'POST',
+                                                            xhrFields:{withCredentials:true},
+                                                            data:{
+                                                                instance:{
+                                                                    flight_id:newflightid,
+                                                                    date: fulldate,
+                                                                    info: "0"
+                                                                }
+                                                            },success:(response)=>{
+                                                                var found=false;
+                                                                if(!found){
+                                                                    console.log("AO");
+                                                                    checkifflight(did,aid,newflightid,fulldate, fulldate,departp, arrivep, fulltime, response.id, pid, response.info, dd, mm,yyyy,response.date);
+                                                                    found=true;
+                                                                }
+                                                                return;
+                                                            }//success
+                                                        });//root_url+instances
                                                     }//success
-                                                });//root_url+instances
-                                            }//success
-                                        });//root_url+flights
-                                    }//for
-                                }//success
-                            });//planes
-                           
-                        } else {
-
-                    if(depart&&arrive/*!(depart&&arrive)*/){
-                    console.log("EE");
-                    $.ajax(root_url+"flights",{
-                        type: 'GET',
-                            xhrFields: {withCredentials: true},
-                            success:(response)=>{
-                               let farray=response;
-                               for(f=0; f<farray.length;f++){
-                                       //console.log("flight array loop");
-                                    var fid = farray[f].id;
-                                    var fdid = farray[f].departure_id;
-                                    var faid = farray[f].arrival_id;
-                                    var time = farray[f].departs_at;
-                                    
-                                    if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
-                                        console.log("PP");
-                                        var pid = farray[f].plane_id;
-                                        $.ajax(root_url+"instances?filter[flight_id]=" + encodeURIComponent(fid),{
-                                            type: 'GET',
-                                            xhrFields:{withCredentials:true},
-                                            success:(response)=>{
-                                                var inarray = response;
-                                                inarray = inarray.sort(function(a,b){
-                                                    return a.id-b.id;
-                                                });
-                                                var found = false;
-                                                for(u=0; u<inarray.length;u++){
-                                                    var din = inarray[u].date;
-                                                    var info = inarray[u].info;
-                                                    if(!found&&!testifinstanceisfull(fid, inarray[u].id, din, info)){
-                                                        var instance = inarray[u].id;
-                                                        checkifflight(did,aid,fid,din, orgdate,departp, arrivep, fulltime, instance, pid, info, dd, mm,yyyy,din);
-                                                       found=true;
-                                                       u=inarray.length+1;
-                                                    } else {
-                                                        dd++;
-                                                        if (mm==12 && dd==32){
-                                                            mm="0"+1;
-                                                            dd=1;
-                                                            yyyy++;
-                                                        }
-                                                        if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
-                                                            mm++;
-                                                            dd=1;
-                                                            if (mm<10){
-                                                                mm="0"+mm;
-                                                            }
-                                                        } else if (mm==2 && dd==29){
-                                                            mm++;
-                                                            dd=1;
-                                                            if (mm<10){
-                                                            mm="0"+mm;
-                                                        }
-                                                    } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
-                                                        mm++;
-                                                        dd=1;
-                                                        if (mm<10){
-                                                            mm="0"+mm;
-                                                        }
-                                                    }
-                                                    if (dd<10){
-                                                        dd="0"+dd;
-                                                    }
-
-                                                    fulldate = yyyy + "-" + mm + "-" + dd;
-                                                }//else
-                                            }//for loop
+                                                });//root_url+flights
+                                            }//for
                                         }//success
-                                    });//instance filter
-                                }//if fdid=did
-                                //f=farray.length+1;
-                            }//farray
-                        }//success
-                    });//flights
-                }//depar
-                        }//doesflightexist
-                    }//success
-                });//flights ajax
-}//are the two cities the same thing
-}//do those airports actually exist
+                                    });//planes
+                           
+                                } else {
+                                    if(depart&&arrive/*!(depart&&arrive)*/){
+                                        console.log("EE");
+                                        $.ajax(root_url+"flights",{
+                                            type: 'GET',
+                                            xhrFields: {withCredentials: true},
+                                            success:(response)=>{
+                                                let farray=response;
+                                                for(f=0; f<farray.length;f++){
+                                                         //console.log("flight array loop");
+                                                    var fid = farray[f].id;
+                                                    var fdid = farray[f].departure_id;
+                                                    var faid = farray[f].arrival_id;
+                                                    var time = farray[f].departs_at;
+                                        
+                                                    if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
+                                                    console.log("PP");
+                                                        var pid = farray[f].plane_id;
+                                                        $.ajax(root_url+"instances?filter[flight_id]=" + encodeURIComponent(fid),{
+                                                            type: 'GET',
+                                                            xhrFields:{withCredentials:true},
+                                                            success:(response)=>{
+                                                                var inarray = response;
+                                                                inarray = inarray.sort(function(a,b){
+                                                                    return a.id-b.id;
+                                                                });
+                                                                var found = false;
+                                                                for(u=0; u<inarray.length;u++){
+                                                                    var din = inarray[u].date;
+                                                                    var info = inarray[u].info;
+                                                                    if(!found&&!testifinstanceisfull(fid, inarray[u].id, din, info)){
+                                                                        var instance = inarray[u].id;
+                                                                        checkifflight(did,aid,fid,din, orgdate,departp, arrivep, fulltime, instance, pid, info, dd, mm,yyyy,din);
+                                                                        found=true;
+                                                                        u=inarray.length+1;
+                                                                    } else {
+                                                                        dd++;
+                                                                        if (mm==12 && dd==32){
+                                                                            mm="0"+1;
+                                                                            dd=1;
+                                                                            yyyy++;
+                                                                        }
+                                                                        if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
+                                                                            mm++;
+                                                                            dd=1;
+                                                                            if (mm<10){
+                                                                                mm="0"+mm;
+                                                                            }
+                                                                        } else if (mm==2 && dd==29){
+                                                                            mm++;
+                                                                            dd=1;
+                                                                            if (mm<10){
+                                                                                mm="0"+mm;
+                                                                            }
+                                                                        } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
+                                                                            mm++;
+                                                                            dd=1;
+                                                                            if (mm<10){
+                                                                                mm="0"+mm;
+                                                                            }
+                                                                        }
+                                                                        if (dd<10){
+                                                                            dd="0"+dd;
+                                                                        }
+                                                                        fulldate = yyyy + "-" + mm + "-" + dd;
+                                                                    }//else
+                                                                }//for loop
+                                                            }//success
+                                                        });//instance filter
+                                                    }//if fdid=did
+                                     //f=farray.length+1;
+                                                }//farray
+                                            }//success
+                                        });//flights
+                                    }//depar
+                                }//doesflightexist
+                            }//success
+                        });//flights ajax
+                    }//are the two cities the same thing
+                }//do those airports actually exist
                         //add a thing that creates a new flight and a new instance based on what they've typed if they say something new
-                        //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
+                         //ajax post directly below should create a new flight and instance, just need to figure out where in the program that it needs to go
 
-                
+                    
             }//airports succes
         });//air
-    }//if time is null
-    });//function
+        //}//if time is null
+    };//function
             
 
      function checkifflight(did,aid,flightid,date,tdate,dp,ar,ti,instance,pid,info,dd,mm,yyyy,din){
