@@ -260,7 +260,7 @@ var build_airlines_interface = function() {
         console.log("browse destination");
         let body=$('body');
         body.empty();
-        body.append(response_div);
+        
         response_div.empty();
         let home_btn=$('<button id="home_btn">Home Page</button>');
         body.append(home_btn);
@@ -286,6 +286,7 @@ var build_airlines_interface = function() {
         body.append(airportList);   
         let search_div = $('<div id=search_div></div>');
         body.append(search_div);   
+        body.append(response_div);
         $.ajax(root_url+"airports",{
             type:'GET',
             xhrFields:{withCredentials:true},
@@ -303,6 +304,7 @@ var build_airlines_interface = function() {
 
         $('body').on("click", '.airport', function() {
             search_div.empty();
+            response_div.empty();
             console.log("it comes here");
             //somehow add api 
             var weather_root="https://api.openweathermap.org/data/2.5/weather?";
@@ -323,8 +325,9 @@ var build_airlines_interface = function() {
                     console.log(response);  
                     let temp=response.main.temp; //could put a picture for different temp ranges 
                     let cname=response.name; 
+                    let sky=response.weather[0].description; 
                     console.log(temp);
-                    search_div.append('The current temperature in '+cname+' is '+temp+'F'+'<br>');
+                    search_div.append('There is currently '+sky+' and the current temperature in '+cname+' is '+temp+'F'+'<br>');
                      search_div.append("<p>Like the look of your choice? Simply enter your departure location and flight time and we'll find your flight for you!</p>");
                     let dptext=$('<p class="dptext">Enter a departure location:</p>');
                     search_div.append(dptext);
@@ -346,7 +349,7 @@ var build_airlines_interface = function() {
                             xhrFields:{withCredentials:true},
                             success: (response) => {
                                 let airportid = response;
-                                console.log(response);
+                                console.log(airportid);
                                 console.log("length "+airportid.length);
                                 for (ai=0;ai<airportid.length;ai++){
                                     console.log(airport+" test "+airportid[ai].city);
@@ -354,8 +357,8 @@ var build_airlines_interface = function() {
                                     //don't know why this is testing negative, will keep looking
                                     //because airport has a space in it 
                                     if(airport.toLowerCase().localeCompare(airportid[ai].city.toLowerCase())==0){
-                                        ai=airportid.length+1;
-                                        console.log("airportid"+airportid[ai]);
+                                        //ai=airportid.length+1;
+                                        console.log(airportid[ai]);
                                         let id = airportid[ai].id;
                                          
                                         let arriveloc = cname;
@@ -522,9 +525,10 @@ var build_airlines_interface = function() {
                     console.log(response);
 
                     for(i=0;i<airarray.length;i++){
-                        console.log(arrivep+"arrive"+aircity);
+                        
 
                         var aircity=airarray[i].city;
+                        console.log(arrivep+"arrive"+aircity);
                         if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0){
                             depart=true;
                             departerror = false;
@@ -785,6 +789,7 @@ var build_airlines_interface = function() {
 
      function checkifflight(did,aid,flightid,date,tdate,dp,ar,ti,instance,pid,info,dd,mm,yyyy,din){
         response_div.empty();
+        console.log("check");
         $.ajax(root_url+"airports/"+encodeURIComponent(did),{
             type:'GET',
             xhrFields:{withCredentials:true},
@@ -939,24 +944,24 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
         let fnamet=$('<p class="fnamet">Enter your first name:</p>');
         let fname=$('<input type="text" class="fname"></input>');
         fnamet.append(fname);
-        body.append(fnamet);
+        response_div.append(fnamet);
         let lnamet=$('<p class="lnamet">Enter your last name:</p>');
         let lname=$('<input type="text" class="lname"></input>');
         lnamet.append(lname);
-        body.append(lnamet);
+        response_div.append(lnamet);
         
         let gendert=$('<p class="gendert">Gender:</p>');
         let gender=$('<input type="text" class="gender"></input>');
         gendert.append(gender);
-        body.append(gendert);
+        response_div.append(gendert);
 
         let aget=$('<p class="aget">Age:</p>');
         let age=$('<input type="text" class="age"></input>');
         aget.append(age);
-        body.append(aget);
+        response_div.append(aget);
 
         let persubmit_btn=$('<button id="persubmit_btn">Submit Personal Information</button>');
-        body.append(persubmit_btn);
+        response_div.append(persubmit_btn);
         $('body').on('click', '#persubmit_btn', function () {
             let fn=$(this).parent().find('.fname').val();
             let ln=$(this).parent().find('.lname').val();
