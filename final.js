@@ -1094,7 +1094,7 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
                                     let ticket_btn=$('<button id="ticket_btn">See Ticket</button>');
                                     body.append(ticket_btn);
 
-                                    $('body').on('click', '#ticket_btn', function () {   //we can either clear screen or put at bttom
+                                      $('body').on('click', '#ticket_btn', function () {   //we can either clear screen or put at bttom
                                         //console.log("print ticket");
                                         let ticket_div=$('<div class="ticket_div"><div>');
                                         let firstn=fn;//response.first_name;
@@ -1104,9 +1104,14 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
                                         //not really sure why not showing up 
                                         let perinfo=g+", "+a+" years old";//response.gender+", "+response.age+" years old");
                                         let seat_info="Seat "+seatid+", id";//"Seat "+response.seat_id+", id");
-                                        ticket_div.append(full_name);
-                                        ticket_div.append(perinfo);
-                                        ticket_div.append(seat_info);
+                                        let ticketicon=$('<i class="fas fa-ticket-alt"></i>');
+                                        let fullnameinfo=$('<div class="full_name">'+full_name+'<div>');
+                                        let personalinfo=$('<div class="perinfo">'+perinfo+'<div>');
+                                        let perseatinfo=$('<div class="seat_info">'+seat_info+'<div>');
+                                        ticket_div.append(ticketicon);
+                                        ticket_div.append(fullnameinfo);
+                                        ticket_div.append(personalinfo);
+                                        ticket_div.append(perseatinfo);
                                         body.append(ticket_div);
             });
 
