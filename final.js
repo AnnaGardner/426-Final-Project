@@ -214,8 +214,12 @@ var build_airlines_interface = function() {
         //console.log("book");
         let body=$('body');
         body.empty();
+        let header = $('<header></header>');
         let home_btn=$('<button id="home_btn">Home Page</button>');
-        body.append(home_btn);
+        let search_btn = $('<button id="search_btn">Browse Destination</button>')
+        header.append(home_btn);
+        header.append(search_btn);  
+        body.append(header);
         let btitle=$('<h1 class="btitle">Book a Flight!</h1>');
         body.append(btitle);
 
