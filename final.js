@@ -211,6 +211,7 @@ var build_airlines_interface = function() {
     let response_div = $('<div id="response_div"></div>');
      
         function book(){
+            console.log("book");
         //console.log("book");
         let body=$('body');
         body.empty();
@@ -446,8 +447,8 @@ var build_airlines_interface = function() {
             response_div.append("<p>Please input your desired arrival location. If you do not already know where'd you like to travel, we are happy to offer you our search feature to pick your next adventure!</p>");
             response_div.append(search_btn);
         } else {
-        flightcheck(departp, departt,arrivep,false);
-    }
+            flightcheck(departp, departt,arrivep,false);
+        }
    });
 
    function flightcheck(departp, departt, arrivep,arrivefine,arriveid){
@@ -466,13 +467,15 @@ var build_airlines_interface = function() {
                 } else {
                     let dtest = ""+newdepartt[d];
                     if(!dtest.localeCompare(":")==0){
-                    min=min+newdepartt[d];
+                        min=min+newdepartt[d];
+                    }
                 }
-            }
-        }//for
-            console.log("hour"+hour);
-            console.log("min"+min);
+            }//for
+            //console.log("hour"+hour);
+            //console.log("min"+min);
             var fulltime = "";
+                                                console.log("TTT");
+
                 //var newmin = parseInt(min,10);
             //console.log("newmin"+newmin);
             if(min>53){
@@ -491,6 +494,10 @@ var build_airlines_interface = function() {
             if(hour>=12){
                 hour=hour-12;
             }
+
+            if(hour<10){
+                hour="0"+hour;
+            }
             fulltime = hour+min;
 
             hourstring="2000-01-01T"+fulltime+":00.000Z";
@@ -498,7 +505,9 @@ var build_airlines_interface = function() {
             if(hour>=12){
                 hour = hour-12;
             }
-            
+            if(hour<10){
+                hour="0"+hour;
+            }
            // fulltime=departt;
             hour=departt;
             if(hour>=12){
@@ -511,7 +520,8 @@ var build_airlines_interface = function() {
             //hourstring = "2000-01-01T"+departt+":00:00.000Z";
         }
 
-    
+                                        console.log("TTR");
+
         //add a depart date picker and change the flight searcher to a instance finder 
         //just say that the depart date is current day
         //get list of airports
@@ -526,6 +536,8 @@ var build_airlines_interface = function() {
         var fulldate = yyyy + "-" + mm + "-" + dd;
         var orgdate = fulldate;
         var firstcheck=false;
+                                            console.log("TTT");
+
             $.ajax(root_url+"airports/",{
                 type: 'GET',
                 xhrFields: {withCredentials: true},
@@ -538,43 +550,46 @@ var build_airlines_interface = function() {
                     console.log(response);
 
                     for(i=0;i<airarray.length;i++){
-                        
-
-                        var aircity=airarray[i].city;
+                        var aircity = airarray[i].city;
                         var aircode = airarray[i].code;
+                        console.log(aircity+"RR"+departp);console.log(aircode+"LL"+arrivep);
+                        console.log(aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0);
+                        if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0&&aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
+                            console.log("RR");
+                            arrive=true;depart=true;
+                            departerror=true;arriveerror=true;
+                        } else if(aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0&&aircode.toLowerCase().localeCompare(departp.toLowerCase())==0){
+                            console.log("EE");
+                            arrive=true;depart=true;
+                            departerror=true;arriveerror=true;
+                        } else {
                         //console.log(arrivep+"arrive"+aircity);
-                        if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0||aircode.toLowerCase().localeCompare(departp.toLowerCase())==0){
-                            depart=true;
-                            departerror = false;
-                            did = airarray[i].id;
-                        } /*else {
-                          did = airarray[i].id;
-                            }*/
-                        if(arrivefine==true&&!firstcheck){
-                            arrive=true;
-                            arriveerror=false;
-                            aid=arriveid;
-                            firstcheck=true;
-                        } else if (aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0||aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
-                            arrive=true;
-                            arriveerror=false;
-                            aid = airarray[i].id;
+                            if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0||aircode.toLowerCase().localeCompare(departp.toLowerCase())==0){
+                                depart=true;
+                                departerror = false;
+                                did = airarray[i].id;
+                            } /*else {
+                              did = airarray[i].id;
+                                }*/
+                            if(arrivefine==true&&!firstcheck){
+                                arrive=true;
+                                arriveerror=false;
+                                aid=arriveid;
+                                firstcheck=true;
+                            } else if (aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0||aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
+                                arrive=true;
+                                arriveerror=false;
+                                aid = airarray[i].id;
+                            }
+                         /*else{
+                                  aid = airarray[i].id;
+                                }*/
                         }
-                     /*else{
-                              aid = airarray[i].id;
-                            }*/
                         if(depart&&arrive){
                             i=airarray.length+1;
                         }
 
                     }//for
-
-                    /*if(!depart){
-                        departerror=departp;
-                    }
-                    if (!arrive){
-                        arriveerror=arrivep;
-                    }*/
 
                     if(!(depart&&arrive)){
                         if(arriveerror&&departerror){
@@ -587,20 +602,12 @@ var build_airlines_interface = function() {
                         //airporterror(departerror,departerror);
                         //error catch if airports don't exist
                     } else {
+                                                            console.log("TTT");
 
-                        if(departp.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
+
+                        if(departp.toLowerCase().localeCompare(arrivep.toLowerCase())==0||(arriveerror&&departerror)){
                             response_div.append("<p>Please select another airport for either your arrival or departure location, as you've input the same location for both.");
                         } else {
-
-                    
-                    /*if(!depart){
-                        airporterror(departp);
-                    }
-                    if(!arrive){
-                        airporterror(null,arrivep);
-                    }*/
-
-
                             var doesflightexist=false;
                             $.ajax(root_url+"flights",{
                                 type: 'GET',
@@ -616,7 +623,8 @@ var build_airlines_interface = function() {
                                         var fdid = farray[f].departure_id;
                                         var faid = farray[f].arrival_id;
                                         var time = farray[f].departs_at;
-                                        
+                                           // console.log("time"+time);
+                                                   // console.log("hour"+hourstring);
                                         if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
                                             doesflightexist=true;
                                             console.log("BB");
@@ -668,8 +676,8 @@ var build_airlines_interface = function() {
                                             type:'GET',
                                             xhrFields:{withCredentials:true},
                                             success:(response)=>{
-                                            for(r=0;r<1;r++){
-                                                pid = response[r].id;
+                                            //for(r=0;r<1;r++){
+                                                pid = response[0].id;
                                                 console.log(aid+"aid");
                                                 $.ajax(root_url+"flights",{
                                                     type:'POST',
@@ -700,7 +708,7 @@ var build_airlines_interface = function() {
                                                                 var found=false;
                                                                 if(!found){
                                                                     console.log("AO");
-                                                                    checkifflight(did,aid,newflightid,fulldate, fulldate,departp, arrivep, fulltime, response.id, pid, response.info, dd, mm,yyyy,response.date);
+                                                                    checkifflight(did,aid,newflightid,fulldate, fulldate,departp, arrivep, fulltime, response.id, pid, response.info, dd, mm,yyyy,response.date, fulltime);
                                                                     found=true;
                                                                 }
                                                                 return;
@@ -708,7 +716,7 @@ var build_airlines_interface = function() {
                                                         });//root_url+instances
                                                     }//success
                                                 });//root_url+flights
-                                            }//for
+                                            //}//for
                                         }//success
                                     });//planes
                            
@@ -726,7 +734,6 @@ var build_airlines_interface = function() {
                                                     var fdid = farray[f].departure_id;
                                                     var faid = farray[f].arrival_id;
                                                     var time = farray[f].departs_at;
-                                        
                                                     if (fdid==did && faid==aid&&time.localeCompare(hourstring)==0){
                                                     console.log("PP");
                                                         var pid = farray[f].plane_id;
@@ -746,7 +753,7 @@ var build_airlines_interface = function() {
                                                                     var info = inarray[u].info;
                                                                     if(!found&&!testifinstanceisfull(fid, inarray[u].id, din, info)){
                                                                         var instance = inarray[u].id;
-                                                                        checkifflight(fdid,faid,fid,din, orgdate,departp, arrivep, fulltime, instance, pid, info, dd, mm,yyyy,din);
+                                                                        checkifflight(fdid,faid,fid,din, orgdate,departp, arrivep, fulltime, instance, pid, info, dd, mm,yyyy,din,fulltime);
                                                                         found=true;
                                                                         u=inarray.length+1;
                                                                     } else {
@@ -804,7 +811,7 @@ var build_airlines_interface = function() {
     };//function
             
 
-     function checkifflight(did,aid,flightid,date,tdate,dp,ar,ti,instance,pid,info,dd,mm,yyyy,din){
+     function checkifflight(did,aid,flightid,date,tdate,dp,ar,ti,instance,pid,info,dd,mm,yyyy,din,time){
         console.log("did"+did);console.log("aid"+aid);
         response_div.empty();
         console.log("check");
@@ -832,17 +839,17 @@ var build_airlines_interface = function() {
                         arrivename = response.name;
                         arrivecity = response.city;
                         if(date.localeCompare(tdate)==0){
-                                        text = "You will be booking this flight: from " + departname + " in " + departcity + " to " + arrivename + " in " + arrivecity + " at " + ti + " on " + date;
-                                    } else {
-                                        text = "Regretably, your initial choice of flight is not available. We can offer you a flight from " + departname + " in " + departcity + " to " + arrivename + " in " + arrivecity + " at " + ti + " on " + date;
-                                    }
-                                    response_div.append(text);
-                                    response_div.append("<p>To book your ticket, click yes. If you're not happy with this flight, please search again.</p>");
-                                    let yes_btn=$('<button id="yes_btn">Correct flight</button>');
-                                    response_div.append(yes_btn);
-                                    $('#response_div').on('click', '#yes_btn', function () {
-                                        createticket(instance,pid,flightid, info,dd,mm,yyyy,din);
-                                    });
+                            text = "You will be booking this flight: from " + departname + " in " + departcity + " to " + arrivename + " in " + arrivecity + " at " + ti + " on " + date;
+                        } else {
+                            text = "Regretably, your initial choice of flight is not available today. We can offer you a flight from " + departname + " in " + departcity + " to " + arrivename + " in " + arrivecity + " at " + ti + " on " + date;
+                        }
+                        response_div.append(text);
+                        response_div.append("<p>To book your ticket, click yes. If you're not happy with this flight, please search again, and we will attempt to find a flight for you today.</p>");
+                        let yes_btn=$('<button id="yes_btn">Correct flight</button>');
+                        response_div.append(yes_btn);
+                        $('#response_div').on('click', '#yes_btn', function () {
+                            createticket(instance,pid,flightid, info,dd,mm,yyyy,din,time);
+                        });
                     }
                 });
             }
@@ -953,60 +960,58 @@ function testifinstanceisfull(flightid, instanceid, date, info){
     return returntext;
 };
 
-function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
+function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate,time){
     response_div.empty();
     console.log("createtickedid="+instanceid);
     console.log("Creating ticket");
     var newdate;
 
-        let fnamet=$('<p class="fnamet">Enter your first name:</p>');
-        let fname=$('<input type="text" class="fname"></input>');
-        fnamet.append(fname);
-        response_div.append(fnamet);
-        let lnamet=$('<p class="lnamet">Enter your last name:</p>');
-        let lname=$('<input type="text" class="lname"></input>');
-        lnamet.append(lname);
-        response_div.append(lnamet);
-        
-        let gendert=$('<p class="gendert">Gender:</p>');
-        let gender=$('<input type="text" class="gender"></input>');
-        gendert.append(gender);
-        response_div.append(gendert);
+    let fnamet=$('<p class="fnamet">Enter your first name:</p>');
+    let fname=$('<input type="text" class="fname"></input>');
+    fnamet.append(fname);
+    response_div.append(fnamet);
+    let lnamet=$('<p class="lnamet">Enter your last name:</p>');
+    let lname=$('<input type="text" class="lname"></input>');
+    lnamet.append(lname);
+    response_div.append(lnamet);
+     
+    let gendert=$('<p class="gendert">Gender:</p>');
+    let gender=$('<input type="text" class="gender"></input>');
+    gendert.append(gender);
+    response_div.append(gendert);
 
-        let aget=$('<p class="aget">Age:</p>');
-        let age=$('<input type="text" class="age"></input>');
-        aget.append(age);
-        response_div.append(aget);
+    let aget=$('<p class="aget">Age:</p>');
+    let age=$('<input type="text" class="age"></input>');
+    aget.append(age);
+    response_div.append(aget);
 
-        let persubmit_btn=$('<button id="persubmit_btn">Submit Personal Information</button>');
-        response_div.append(persubmit_btn);
-        $('body').on('click', '#persubmit_btn', function () {
-            let fn=$(this).parent().find('.fname').val();
-            let ln=$(this).parent().find('.lname').val();
-            let g=$(this).parent().find('.gender').val();
-            let a=$(this).parent().find('.age').val();
-            var testa = parseInt(a,10);
-            console.log("atest"+a);
-            console.log("test"+testa);
-            if(isNaN(testa)){
-                response_div.append('<p>Age is invalid');
-            } else {
+    let persubmit_btn=$('<button id="persubmit_btn">Submit Personal Information</button>');
+    response_div.append(persubmit_btn);
+    $('body').on('click', '#persubmit_btn', function () {
+        let fn=$(this).parent().find('.fname').val();
+        let ln=$(this).parent().find('.lname').val();
+        let g=$(this).parent().find('.gender').val();
+        let a=$(this).parent().find('.age').val();
+        var testa = parseInt(a,10);
+        if(isNaN(testa)){
+            response_div.append('<p>Age is invalid');
+        } else {
 
             var seatcount = parseInt(info,10);
             //how to get instance's info
             seatcount++;
             var newinfo = ""+ seatcount;
-            if(newinfo.localeCompare("2")||seatcount==2){
+            /*if(newinfo.localeCompare("20")||seatcount==20){
                 console.log("RRRR");
                 newinfo = "full";
                 dd++;
-                    if (mm==12 && dd==32){
-                        mm=1;
-                        dd=1;
-                        yyyy++;
-                    }
-                    if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
-                        mm++;
+                if (mm==12 && dd==32){
+                    mm=1;
+                    dd=1;
+                    yyyy++;
+                }
+                if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
+                    mm++;
                         dd=1;
                         if (mm<10){
                             mm="0"+mm;
@@ -1028,30 +1033,30 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
                         dd="0"+dd;
                     }
 
-                   newdate = yyyy + "-" + mm + "-" + dd;
+                   newdate = yyyy + "-" + mm + "-" + dd;*/
 
-             $.ajax(root_url+"instances",{
+            /* $.ajax(root_url+"instances",{
             type: 'POST',
             xhrFields:{withCredentials:true},
             data:{
                 instance:{
                     flight_id: flightid,
-                    date:newdate,
-                    info:"0"
+                    date:orgdate,
+                    info:newinfo
                 }
             },
             success:(response)=>{
-                console.log("newdate"+newdate);
+                //console.log("newdate"+newdate);
                 //*******************************
                 //console.log(response);
                /* id=response.id; 
                 console.log("responseid="+id);
                 returnf(id);*/
                 //return id;
-            }
+            //}
 
-        });
-            }
+        //});
+            //}
            // console.log("in= "+instanceid);
 
            //var date = yyyy+"-"+mm+"-"+dd;
@@ -1065,66 +1070,59 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate){
                     info:newinfo
                 }
             }
-            });
-
+        });
            
-
-
-
-            $.ajax(root_url+"seats?filter[plane_id]="+encodeURIComponent(planeid),{
-                type:'GET',
-                xhrFields:{withCredentials:true},
-                success:(response)=>{
-                            body.append('<p>Ticket successfully booked! Enjoy your trip!</p>');
-
-                    let seatarray=response;
-                    for(i=0;i<seatarray.length;i++){
-                        //console.log(seatarray[i].id);
-                        seatid = seatarray[i].id;
-
-                       // if(seatarray[i].plane_id==planeid){
-                            $.ajax(root_url+"tickets",{
-                                type:'POST',
-                                xhrFields:{withCredentials:true},
-                                data:{
-                                    ticket:{
-                                        first_name: fn,
-                                        last_name:ln,
-                                        age:a,
-                                        gender:g,
-                                        seat_id:seatid,
-                                        instance_id: instanceid
-                                    }
-                                },
-                                success:(response)=>{
-                                    //console.log("ticket ");
-                                    //console.log(response);
-                                    let ticket_btn=$('<button id="ticket_btn">See Ticket</button>');
-                                    body.append(ticket_btn);
-
-                                      $('body').on('click', '#ticket_btn', function () {   //we can either clear screen or put at bttom
-                                        //console.log("print ticket");
-                                        let ticket_div=$('<div class="ticket_div"><div>');
-                                        let firstn=fn;//response.first_name;
-                                        let lastn=ln;//response.last_name;
-                                        let full_name=firstn+" "+lastn+" ";
-                                        //console.log(full_name);
-                                        //not really sure why not showing up 
-                                        let perinfo=g+", "+a+" years old";//response.gender+", "+response.age+" years old");
-                                        let seat_info="Seat "+seatid+", id";//"Seat "+response.seat_id+", id");
-                                        let ticketicon=$('<i class="fas fa-ticket-alt"></i>');
-                                        let fullnameinfo=$('<div class="full_name">'+full_name+'<div>');
-                                        let personalinfo=$('<div class="perinfo">'+perinfo+'<div>');
-                                        let perseatinfo=$('<div class="seat_info">'+seat_info+'<div>');
-                                        ticket_div.append(ticketicon);
-                                        ticket_div.append(fullnameinfo);
-                                        ticket_div.append(personalinfo);
-                                        ticket_div.append(perseatinfo);
-                                        body.append(ticket_div);
-            });
-
+        $.ajax(root_url+"seats?filter[plane_id]="+encodeURIComponent(planeid),{
+            type:'GET',
+            xhrFields:{withCredentials:true},
+            success:(response)=>{
+                body.append('<p>Ticket successfully booked! Enjoy your trip!</p>');
+                let seatarray=response;
+                for(i=0;i<seatarray.length;i++){
+                    //console.log(seatarray[i].id);
+                    seatid = seatarray[i].id;
+                    // if(seatarray[i].plane_id==planeid){
+                    $.ajax(root_url+"tickets",{
+                        type:'POST',
+                        xhrFields:{withCredentials:true},
+                            data:{
+                                ticket:{
+                                    first_name: fn,
+                                    last_name:ln,
+                                    age:a,
+                                    gender:g,
+                                    seat_id:seatid,
+                                    instance_id: instanceid
                                 }
-                            });
+                            },
+                            success:(response)=>{
+                                //console.log("ticket ");
+                                 //console.log(response);
+                                let ticket_btn=$('<button id="ticket_btn">See Ticket</button>');
+                                body.append(ticket_btn);
+                                $('body').on('click', '#ticket_btn', function () {   //we can either clear screen or put at bttom
+                                      //console.log("print ticket");
+                                    let ticket_div=$('<div class="ticket_div"><div>');
+                                    let firstn=fn;//response.first_name;
+                                    let lastn=ln;//response.last_name;
+                                    let full_name=firstn+" "+lastn+" ";
+                                     //console.log(full_name);
+                                     //not really sure why not showing up 
+                                    let perinfo=g+", "+a+" years old";//response.gender+", "+response.age+" years old");
+                                    let seat_info=orgdate + " at "+time;//"Seat "+response.seat_id+", id");
+                                    let ticketicon=$('<i class="fas fa-ticket-alt"></i>');
+                                    let fullnameinfo=$('<div class="full_name">'+full_name+'<div>');
+                                    let personalinfo=$('<div class="perinfo">'+perinfo+'<div>');
+                                    let perseatinfo=$('<div class="seat_info">'+seat_info+'<div>');
+                                    ticket_div.append(ticketicon);
+                                    ticket_div.append(fullnameinfo);
+                                    ticket_div.append(personalinfo);
+                                    ticket_div.append(perseatinfo);
+                                    body.append(ticket_div);
+                                });
+
+                            }
+                        });
                         //}
                     }
                 }
