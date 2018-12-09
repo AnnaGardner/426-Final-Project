@@ -1,6 +1,6 @@
 body{
     background-image: url(sky-background-3890.jpeg);
-    font-family: 'Poppins', serif;
+    font-family: 'Exo', sans-serif;
     align-content: center;
     
 }
@@ -147,7 +147,7 @@ p{
 }
 
 .btitle{
-    font-family: 'Poppins', serif;
+    
 
     font-size: 4vw;
     padding-top: 3vh;
@@ -158,7 +158,7 @@ p{
     color: #293d3d;
 }
 .stext{
-    font-family: 'Poppins', sans-serif;
+  
     font-size: 1em;
     padding-top: 3vh;
     text-align: justify;
@@ -210,7 +210,7 @@ p{
     margin-left: 60%;
     margin-right: 0;
     position: absolute;
-    padding-top: 0;
+    padding-top: .3em;
     
 }
 .full_name{
