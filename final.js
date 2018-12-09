@@ -266,8 +266,12 @@ var build_airlines_interface = function() {
         body.empty();
         
         response_div.empty();
+        let header = $('<header></header>');
         let home_btn=$('<button id="home_btn">Home Page</button>');
-        body.append(home_btn);
+        let book_btn=$('<button id="book_btn">Book a Flight</button>');
+        header.append(home_btn);
+        header.append(book_btn);
+        body.append(header);
         let stitle=$('<h1 class="btitle">Search for a Destination!</h1>');
         body.append(stitle);
         let stext=$('<p class="stext">Not sure where to go? Search for a city or airport to see if we have flights going there. Also, we know you hate arriving somewhere with the wrong clothes. That is why if you click on an airport, you can see the current weather in that city so you can come prepared!</p>');
