@@ -211,6 +211,7 @@ var build_airlines_interface = function() {
     let response_div = $('<div id="response_div"></div>');
      
         function book(){
+            console.log("book");
         //console.log("book");
         let body=$('body');
         body.empty();
@@ -446,8 +447,8 @@ var build_airlines_interface = function() {
             response_div.append("<p>Please input your desired arrival location. If you do not already know where'd you like to travel, we are happy to offer you our search feature to pick your next adventure!</p>");
             response_div.append(search_btn);
         } else {
-        flightcheck(departp, departt,arrivep,false);
-    }
+            flightcheck(departp, departt,arrivep,false);
+        }
    });
 
    function flightcheck(departp, departt, arrivep,arrivefine,arriveid){
@@ -466,13 +467,15 @@ var build_airlines_interface = function() {
                 } else {
                     let dtest = ""+newdepartt[d];
                     if(!dtest.localeCompare(":")==0){
-                    min=min+newdepartt[d];
+                        min=min+newdepartt[d];
+                    }
                 }
-            }
-        }//for
-            console.log("hour"+hour);
-            console.log("min"+min);
+            }//for
+            //console.log("hour"+hour);
+            //console.log("min"+min);
             var fulltime = "";
+                                                console.log("TTT");
+
                 //var newmin = parseInt(min,10);
             //console.log("newmin"+newmin);
             if(min>53){
@@ -517,7 +520,8 @@ var build_airlines_interface = function() {
             //hourstring = "2000-01-01T"+departt+":00:00.000Z";
         }
 
-    
+                                        console.log("TTR");
+
         //add a depart date picker and change the flight searcher to a instance finder 
         //just say that the depart date is current day
         //get list of airports
@@ -532,6 +536,8 @@ var build_airlines_interface = function() {
         var fulldate = yyyy + "-" + mm + "-" + dd;
         var orgdate = fulldate;
         var firstcheck=false;
+                                            console.log("TTT");
+
             $.ajax(root_url+"airports/",{
                 type: 'GET',
                 xhrFields: {withCredentials: true},
@@ -544,43 +550,46 @@ var build_airlines_interface = function() {
                     console.log(response);
 
                     for(i=0;i<airarray.length;i++){
-                        
-
-                        var aircity=airarray[i].city;
+                        var aircity = airarray[i].city;
                         var aircode = airarray[i].code;
+                        console.log(aircity+"RR"+departp);console.log(aircode+"LL"+arrivep);
+                        console.log(aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0);
+                        if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0&&aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
+                            console.log("RR");
+                            arrive=true;depart=true;
+                            departerror=true;arriveerror=true;
+                        } else if(aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0&&aircode.toLowerCase().localeCompare(departp.toLowerCase())==0){
+                            console.log("EE");
+                            arrive=true;depart=true;
+                            departerror=true;arriveerror=true;
+                        } else {
                         //console.log(arrivep+"arrive"+aircity);
-                        if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0||aircode.toLowerCase().localeCompare(departp.toLowerCase())==0){
-                            depart=true;
-                            departerror = false;
-                            did = airarray[i].id;
-                        } /*else {
-                          did = airarray[i].id;
-                            }*/
-                        if(arrivefine==true&&!firstcheck){
-                            arrive=true;
-                            arriveerror=false;
-                            aid=arriveid;
-                            firstcheck=true;
-                        } else if (aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0||aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
-                            arrive=true;
-                            arriveerror=false;
-                            aid = airarray[i].id;
+                            if(aircity.toLowerCase().localeCompare(departp.toLowerCase())==0||aircode.toLowerCase().localeCompare(departp.toLowerCase())==0){
+                                depart=true;
+                                departerror = false;
+                                did = airarray[i].id;
+                            } /*else {
+                              did = airarray[i].id;
+                                }*/
+                            if(arrivefine==true&&!firstcheck){
+                                arrive=true;
+                                arriveerror=false;
+                                aid=arriveid;
+                                firstcheck=true;
+                            } else if (aircity.toLowerCase().localeCompare(arrivep.toLowerCase())==0||aircode.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
+                                arrive=true;
+                                arriveerror=false;
+                                aid = airarray[i].id;
+                            }
+                         /*else{
+                                  aid = airarray[i].id;
+                                }*/
                         }
-                     /*else{
-                              aid = airarray[i].id;
-                            }*/
                         if(depart&&arrive){
                             i=airarray.length+1;
                         }
 
                     }//for
-
-                    /*if(!depart){
-                        departerror=departp;
-                    }
-                    if (!arrive){
-                        arriveerror=arrivep;
-                    }*/
 
                     if(!(depart&&arrive)){
                         if(arriveerror&&departerror){
@@ -593,20 +602,12 @@ var build_airlines_interface = function() {
                         //airporterror(departerror,departerror);
                         //error catch if airports don't exist
                     } else {
+                                                            console.log("TTT");
 
-                        if(departp.toLowerCase().localeCompare(arrivep.toLowerCase())==0){
+
+                        if(departp.toLowerCase().localeCompare(arrivep.toLowerCase())==0||(arriveerror&&departerror)){
                             response_div.append("<p>Please select another airport for either your arrival or departure location, as you've input the same location for both.");
                         } else {
-
-                    
-                    /*if(!depart){
-                        airporterror(departp);
-                    }
-                    if(!arrive){
-                        airporterror(null,arrivep);
-                    }*/
-
-
                             var doesflightexist=false;
                             $.ajax(root_url+"flights",{
                                 type: 'GET',
@@ -675,8 +676,8 @@ var build_airlines_interface = function() {
                                             type:'GET',
                                             xhrFields:{withCredentials:true},
                                             success:(response)=>{
-                                            for(r=0;r<1;r++){
-                                                pid = response[r].id;
+                                            //for(r=0;r<1;r++){
+                                                pid = response[0].id;
                                                 console.log(aid+"aid");
                                                 $.ajax(root_url+"flights",{
                                                     type:'POST',
@@ -715,7 +716,7 @@ var build_airlines_interface = function() {
                                                         });//root_url+instances
                                                     }//success
                                                 });//root_url+flights
-                                            }//for
+                                            //}//for
                                         }//success
                                     });//planes
                            
@@ -838,17 +839,17 @@ var build_airlines_interface = function() {
                         arrivename = response.name;
                         arrivecity = response.city;
                         if(date.localeCompare(tdate)==0){
-                                        text = "You will be booking this flight: from " + departname + " in " + departcity + " to " + arrivename + " in " + arrivecity + " at " + ti + " on " + date;
-                                    } else {
-                                        text = "Regretably, your initial choice of flight is not available today. We can offer you a flight from " + departname + " in " + departcity + " to " + arrivename + " in " + arrivecity + " at " + ti + " on " + date;
-                                    }
-                                    response_div.append(text);
-                                    response_div.append("<p>To book your ticket, click yes. If you're not happy with this flight, please search again, and we will attempt to find a flight for you today.</p>");
-                                    let yes_btn=$('<button id="yes_btn">Correct flight</button>');
-                                    response_div.append(yes_btn);
-                                    $('#response_div').on('click', '#yes_btn', function () {
-                                        createticket(instance,pid,flightid, info,dd,mm,yyyy,din,time);
-                                    });
+                            text = "You will be booking this flight: from " + departname + " in " + departcity + " to " + arrivename + " in " + arrivecity + " at " + ti + " on " + date;
+                        } else {
+                            text = "Regretably, your initial choice of flight is not available today. We can offer you a flight from " + departname + " in " + departcity + " to " + arrivename + " in " + arrivecity + " at " + ti + " on " + date;
+                        }
+                        response_div.append(text);
+                        response_div.append("<p>To book your ticket, click yes. If you're not happy with this flight, please search again, and we will attempt to find a flight for you today.</p>");
+                        let yes_btn=$('<button id="yes_btn">Correct flight</button>');
+                        response_div.append(yes_btn);
+                        $('#response_div').on('click', '#yes_btn', function () {
+                            createticket(instance,pid,flightid, info,dd,mm,yyyy,din,time);
+                        });
                     }
                 });
             }
