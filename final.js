@@ -495,6 +495,9 @@ var build_airlines_interface = function() {
                 hour=hour-12;
             }
 
+            if (hour==0){
+                hour=12;
+            }
             if(hour<10){
                 hour="0"+hour;
             }
@@ -504,6 +507,9 @@ var build_airlines_interface = function() {
         } else {
             if(hour>=12){
                 hour = hour-12;
+            }
+            if(hour==0){
+                hour=12;
             }
             if(hour<10){
                 hour="0"+hour;
@@ -788,6 +794,22 @@ var build_airlines_interface = function() {
                                                                         fulldate = yyyy + "-" + mm + "-" + dd;
                                                                     }//else
                                                                 }//for loop
+                                                                if (!found){
+                                                                    console.log("need new instance");
+                                                                    $.ajax(root_url+"instances",{
+                                                                        type:'POST',
+                                                                        xhrFields:{withCredentials:true},
+                                                                        data:{
+                                                                            instance:{
+                                                                                flight_id:fid,
+                                                                                date:fulldate,
+                                                                                info:"0"
+                                                                            }
+                                                                        },success:(response)=>{
+                                                                            checkifflight(fdid,faid,fid,orgdate,orgdate,departp,arrivep,fulltime,response.id,pid,response.info,dd,mm,yyyy,din,fulltime);
+                                                                        }
+                                                                    })
+                                                                }
                                                             }//success
                                                         });//instance filter
                                                     }//if fdid=did
@@ -1001,76 +1023,62 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate,time
             //how to get instance's info
             seatcount++;
             var newinfo = ""+ seatcount;
-            /*if(newinfo.localeCompare("20")||seatcount==20){
-                console.log("RRRR");
-                newinfo = "full";
-                dd++;
-                if (mm==12 && dd==32){
-                    mm=1;
-                    dd=1;
-                    yyyy++;
-                }
-                if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
-                    mm++;
-                        dd=1;
-                        if (mm<10){
-                            mm="0"+mm;
-                        }
-                     } else if (mm==2 && dd==29){
-                        mm++;
-                        dd=1;
-                        if (mm<10){
-                            mm="0"+mm;
-                        }
-                     } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
-                        mm++;
-                        dd=1;
-                        if (mm<10){
-                            mm="0"+mm;
-                        }
-                    }
-                    if (dd<10){
-                        dd="0"+dd;
-                    }
-
-                   newdate = yyyy + "-" + mm + "-" + dd;*/
-
-            /* $.ajax(root_url+"instances",{
-            type: 'POST',
-            xhrFields:{withCredentials:true},
-            data:{
-                instance:{
-                    flight_id: flightid,
-                    date:orgdate,
-                    info:newinfo
-                }
-            },
-            success:(response)=>{
-                //console.log("newdate"+newdate);
-                //*******************************
-                //console.log(response);
-               /* id=response.id; 
-                console.log("responseid="+id);
-                returnf(id);*/
-                //return id;
-            //}
-
-        //});
-            //}
-           // console.log("in= "+instanceid);
-
-           //var date = yyyy+"-"+mm+"-"+dd;
+            
             $.ajax(root_url+"instances/" + encodeURIComponent(instanceid),{
                 type:'PUT',
                 xhrFields:{withCredentials:true},
                 data:{
                     instance:{
-                    flight_id: flightid,
-                    date:orgdate,
-                    info:newinfo
+                        flight_id: flightid,
+                        date:orgdate,
+                        info:newinfo
+                    }
                 }
-            }
-        });
+            });
+
+            if(seatcount==20){
+                console.log("creating new instance for next day");
+                dd++;
+                if (mm==12 && dd==32){
+                    mm="0"+1;
+                    dd=1;
+                    yyyy++;
+                }
+                if ((mm==1 || mm==3 || mm==5 || mm==7 || mm==8 || mm==10)&&dd==32){
+                    mm++;
+                    dd=1;
+                    if (mm<10){
+                        mm="0"+mm;
+                    }
+                } else if (mm==2 && dd==29){
+                    mm++;
+                    dd=1;
+                    if (mm<10){
+                        mm="0"+mm;
+                    }
+                } else if ((mm==4||mm==6||mm==9||mm==11)&&dd==31){
+                    mm++;
+                    dd=1;
+                    if (mm<10){
+                        mm="0"+mm;
+                    }
+                }
+                if (dd<10){
+                    dd="0"+dd;
+                }
+                fulldate = yyyy + "-" + mm + "-" + dd;
+                $.ajax(root_url+"instances",{
+                type:'POST',
+                xhrFields:{withCredentials:true},
+                data:{
+                    instance:{
+                        flight_id:flightid,
+                        date:fulldate,
+                        info:"0"
+                    }
+                }
+            });
+        }
            
         $.ajax(root_url+"seats?filter[plane_id]="+encodeURIComponent(planeid),{
             type:'GET',
