@@ -802,7 +802,7 @@ var build_airlines_interface = function() {
                                                                         data:{
                                                                             instance:{
                                                                                 flight_id:fid,
-                                                                                date:fulldate,
+                                                                                date:orgdate,
                                                                                 info:"0"
                                                                             }
                                                                         },success:(response)=>{
@@ -879,51 +879,6 @@ var build_airlines_interface = function() {
 
     
     };//function
-
-    function nexthourflight(newtime){
-        console.log("TTTT");
-       response_div.append("<p>Is this time - " + newtime + " - suitable for your flight, or would you prefer your original request?</p>");
-       response_div.append("<button id = 'timeyes_btn'>Yes</button>");
-       response_div.append("<button id='timeno_btn'No</button>");
-       var response = false;
-       $('body').on('click', '#timeyes_btn', function(){
-        console.log("YYYYY");
-        response= true;
-       });
-       $('body').on('click','#timeno_btn',function(){
-        console.log("NNNNNN");
-        response = false;
-       });
-       return response;
-    };
-
-    var id;
-    function createnewinstance(date, flightid){  
-        console.log("creating new instance for date");
-       //var id=0;
-//console.log("flightid= "+flightid);
-//console.log("date= "+date);             
-        $.ajax(root_url+"instances",{
-            type: 'POST',
-            xhrFields:{withCredentials:true},
-            data:{
-                instance:{
-                    flight_id: flightid,
-                    date:date,
-                    info:"0"
-                }
-            },
-            success:(response)=>{
-                id=response.id; 
-                console.log("responseid="+id);
-                returnf(id);
-            }
-
-        });
-            
-
-        
-    };
 
     function airporterror(error1, error2){
 
