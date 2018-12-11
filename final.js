@@ -756,9 +756,11 @@ var build_airlines_interface = function() {
                                                                 var found = false;
                                                                 for(u=0; u<inarray.length;u++){
                                                                     var din = inarray[u].date;
+                                                                    console.log(inarray[u].id);
                                                                     var info = inarray[u].info;
                                                                     if(!found&&!testifinstanceisfull(fid, inarray[u].id, din, info)){
                                                                         var instance = inarray[u].id;
+                                                                        console.log(din+"d"+orgdate);
                                                                         checkifflight(fdid,faid,fid,din, orgdate,departp, arrivep, fulltime, instance, pid, info, dd, mm,yyyy,din,fulltime);
                                                                         found=true;
                                                                         u=inarray.length+1;
@@ -834,7 +836,7 @@ var build_airlines_interface = function() {
             
 
      function checkifflight(did,aid,flightid,date,tdate,dp,ar,ti,instance,pid,info,dd,mm,yyyy,din,time){
-        console.log("did"+did);console.log("aid"+aid);
+        //console.log("did"+did);console.log("aid"+aid);
         response_div.empty();
         console.log("check");
         $.ajax(root_url+"airports/"+encodeURIComponent(did),{
