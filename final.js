@@ -250,7 +250,9 @@ var build_airlines_interface = function() {
         body.append(book_div);
 
         //let response_div = $('<div id="response"><div>');
-        body.append(response_div);
+        //response_div.empty();
+        //body.append(response_div);
+            
 
     };
 
@@ -412,7 +414,8 @@ var build_airlines_interface = function() {
 
 
    $('body').on('click', '#submit_btn', function () {
-        let arriveptest = $(this).parent().find('.arrive_place');
+        body.append(response_div);
+       let arriveptest = $(this).parent().find('.arrive_place');
         let arrivep = $(this).parent().find('.arrive_place').val();
         let departptest = $(this).parent().find('.depart_place');
          let departp=$(this).parent().find('.depart_place').val();
@@ -1041,7 +1044,7 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate,time
             type:'GET',
             xhrFields:{withCredentials:true},
             success:(response)=>{
-                body.append('<p>Ticket successfully booked! Enjoy your trip!</p>');
+                response_div.append('<p>Ticket successfully booked! Enjoy your trip!</p>');
                 let seatarray=response;
                 for(i=0;i<seatarray.length;i++){
                     //console.log(seatarray[i].id);
@@ -1064,9 +1067,9 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate,time
                                 //console.log("ticket ");
                                  //console.log(response);
                                 let ticket_btn=$('<button id="ticket_btn">See Ticket</button>');
-                                body.append(ticket_btn);
+                                response_div.append(ticket_btn);
                                 $('body').on('click', '#ticket_btn', function () {   //we can either clear screen or put at bttom
-                                      //console.log("print ticket");
+                                     response_div.empty(); //console.log("print ticket");
                                     let ticket_div=$('<div class="ticket_div"><div>');
                                     let firstn=fn;//response.first_name;
                                     let lastn=ln;//response.last_name;
@@ -1083,7 +1086,7 @@ function createticket(instanceid, planeid, flightid,info,dd,mm,yyyy,orgdate,time
                                     ticket_div.append(fullnameinfo);
                                     ticket_div.append(personalinfo);
                                     ticket_div.append(perseatinfo);
-                                    body.append(ticket_div);
+                                    response_div.append(ticket_div);
                                 });
 
                             }
